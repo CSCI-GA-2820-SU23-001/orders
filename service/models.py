@@ -173,7 +173,7 @@ class Order(db.Model, BaseModel):
     status = db.Column(
         db.Enum(ShipmentStatus), nullable=False, server_default=(ShipmentStatus.OPEN.name)
     )
-    products = db.relationship("OrderProduct", passive_deletes=True, cascade="delete")  # products will be deleted when order is deleted
+    products = db.relationship("OrderProduct", backref="order", passive_deletes=True)
     
     def serialize(self) -> dict:
         """Serialize an Order into a dict"""
