@@ -41,7 +41,7 @@ class PaymentMethods(Enum):
 
 class BaseModel:
     """
-    A base class of data model that other order and OrderProduct models can inherit from
+    A base class of data model that other order and Item models can inherit from
     """
     def __init__(self):
         self.id = None  # pylint: disable=invalid-name
@@ -109,11 +109,11 @@ class BaseModel:
         return cls.query.filter(cls.name == name)
 
 #################################################dwd#
-# OrderProduct MODEL
+# Item MODEL
 ##################################################
-class OrderProduct(db.Model, BaseModel):
+class Item(db.Model, BaseModel):
     """
-    A Class that represent OrderProduct Model
+    A Class that represent Item Model
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -135,9 +135,9 @@ class OrderProduct(db.Model, BaseModel):
         }
     def deserialize(self, data: dict):
         """
-        Deserializes a Pet from a dictionary
+        Deserializes a Item from a dictionary
         Args:
-            data (dict): A dictionary containing the Pet data
+            data (dict): A dictionary containing the Item data
         """
         try:
             self.id = data["id"]
@@ -150,10 +150,10 @@ class OrderProduct(db.Model, BaseModel):
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
-            raise DataValidationError("Invalid pet: missing " + error.args[0]) from error
+            raise DataValidationError("Invalid item: missing " + error.args[0]) from error
         except TypeError as error:
             raise DataValidationError(
-                "Invalid pet: body of request contained bad or no data " + str(error)
+                "Invalid item: body of request contained bad or no data " + str(error)
             ) from error
         return self
 
@@ -173,7 +173,7 @@ class Order(db.Model, BaseModel):
     status = db.Column(
         db.Enum(ShipmentStatus), nullable=False, server_default=(ShipmentStatus.OPEN.name)
     )
-    products = db.relationship("OrderProduct", backref="order", passive_deletes=True)
+    products = db.relationship("Item", backref="order", passive_deletes=True)
     
     def serialize(self) -> dict:
         """Serialize an Order into a dict"""
@@ -207,7 +207,7 @@ class Order(db.Model, BaseModel):
             self.status = getattr(ShipmentStatus, data["status"])
             products = data["products"]
             for json_product in products:
-                product = OrderProduct()
+                product = Item()
                 product.deserialize(json_product)
                 self.products.append(product)
         # except AssertionError as error:
@@ -218,6 +218,6 @@ class Order(db.Model, BaseModel):
             raise DataValidationError("Invalid order: missing " + error.args[0]) from error
         except TypeError as error:
             raise DataValidationError(
-                "Invalid pet: body of request contained bad or no data " + str(error)
+                "Invalid order: body of request contained bad or no data " + str(error)
             ) from error
         return self
