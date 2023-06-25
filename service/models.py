@@ -7,7 +7,7 @@ import logging
 from flask_sqlalchemy import SQLAlchemy
 from abc import abstractmethod
 from enum import Enum
-from datetime import date
+from datetime import datetime
 
 logger = logging.getLogger("flask.app")
 
@@ -41,7 +41,7 @@ class PaymentMethods(Enum):
 
 class BaseModel:
     """
-    A base class of data model that other order and item models can inherit from
+    A base class of data model that other order and OrderProduct models can inherit from
     """
     def __init__(self):
         self.id = None  # pylint: disable=invalid-name
@@ -109,29 +109,33 @@ class BaseModel:
         return cls.query.filter(cls.name == name)
 
 #################################################dwd#
-# ITEM MODEL
+# OrderProduct MODEL
 ##################################################
-class Item(db.Model, BaseModel):
+class OrderProduct(db.Model, BaseModel):
     """
-    A Class that represent Item Model
+    A Class that represent OrderProduct Model
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    create_time = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow())
+    update_time = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow())
+    product_id = db.Column(db.Integer, nullable=False) # should be set as ForeignKey db.ForeignKey('product.id'), but this will give "table not found" error 
     quantity = db.Column(db.Integer, nullable=False)
     total = db.Column(db.Float, nullable=False)
     order_id = db.Column(
         db.Integer, db.ForeignKey("order.id", ondelete="CASCADE"), nullable=False
     )
-    order = db.relationship("Item", back_populates="items")
     
     def serialize(self) -> dict:
         """Serialize an Order into a dict"""
         return {
             "id": self.id,  
+            "create_time": self.create_time.isoformat(),
+            "update_time": self.update_time.isoformat(),
+            "product_id": self.product_id,
             "quantity": self.quantity,
             "total": self.total,
             "order_id": self.order_id,
-            "order": self.order
         }
     def deserialize(self, data: dict):
         """
@@ -141,10 +145,12 @@ class Item(db.Model, BaseModel):
         """
         try:
             self.id = data["id"]
+            self.create_time = data["create_time"]
+            self.update_time = data["update_time"]
+            self.product_id = data["product_id"]
             self.quantity = data["quantity"]
             self.total = data["total"]
             self.order_id = data["total"]
-            self.order = data["order"]
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
@@ -164,30 +170,32 @@ class Order(db.Model, BaseModel):
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    date = db.Column(db.Date(), nullable=False, default=date.today())
+    create_time = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow())
+    update_time = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow())
     total = db.Column(db.Float, nullable=False)
     payment = db.Column(db.Enum(PaymentMethods), nullable=False)
     address = db.Column(db.String(53), nullable = False)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False) # this will give "table not found" error
+    customer_id = db.Column(db.Integer, nullable=False) # should be set as ForeignKey db.ForeignKey('customer.id'), but this will give "table not found" error 
     status = db.Column(
         db.Enum(ShipmentStatus), nullable=False, server_default=(ShipmentStatus.OPEN.name)
     )
-    items = db.relationship("Item", back_populates="order", passive_deletes=True)  # items will be deleted when order is deleted
+    products = db.relationship("OrderProduct", passive_deletes=True, cascade="delete")  # products will be deleted when order is deleted
     
     def serialize(self) -> dict:
         """Serialize an Order into a dict"""
         order = {
             "id": self.id,
-            "date": self.date.isoformat(),
+            "create_time": self.create_time.isoformat(),
+            "update_time": self.update_time.isoformat(),
             "total": self.total,
             "payment": self.payment.name, # convert enum to string
             "address": self.address,
             "customer_id": self.customer_id,
             "status": self.status.name, # convert enum to string
-            "items": []
+            "products": []
         }
-        for item in self.items:
-            order["items"].append(item.serialize())
+        for product in self.products:
+            order["products"].append(product.serialize())
         return order
      
     def deserialize(self, data: dict):
@@ -199,22 +207,23 @@ class Order(db.Model, BaseModel):
         try:
             # assert(isinstance(data["total"],float), "total")
             self.id = data["id"]
-            self.date = date.fromisoformat(data["date"])
+            self.create_time = datetime.fromisoformat(data["create_time"])
+            self.update_time = datetime.fromisoformat(data["update_time"])
             self.total = data["total"]
             self.payment = getattr(PaymentMethods, data["payment"])
             self.customer_id = data["customer_id"]
             self.status = getattr(ShipmentStatus, data["status"])
-            items = data["items"]
-            for json_item in items:
-                item = Item()
-                item.deserialize(json_item)
-                self.items.append(item)
+            products = data["products"]
+            for json_product in products:
+                product = OrderProduct()
+                product.deserialize(json_product)
+                self.products.append(product)
         # except AssertionError as error:
         #     raise DataValidationError("Invalid type for boolean [available]: " + str(type(data["available"])))
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
-            raise DataValidationError("Invalid pet: missing " + error.args[0]) from error
+            raise DataValidationError("Invalid order: missing " + error.args[0]) from error
         except TypeError as error:
             raise DataValidationError(
                 "Invalid pet: body of request contained bad or no data " + str(error)
