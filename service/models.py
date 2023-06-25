@@ -7,7 +7,7 @@ import logging
 from flask_sqlalchemy import SQLAlchemy
 from abc import abstractmethod
 from enum import Enum
-from datetime import datetime
+from datetime import date
 
 logger = logging.getLogger("flask.app")
 
@@ -117,8 +117,6 @@ class OrderProduct(db.Model, BaseModel):
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    create_time = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow())
-    update_time = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow())
     product_id = db.Column(db.Integer, nullable=False) # should be set as ForeignKey db.ForeignKey('product.id'), but this will give "table not found" error 
     quantity = db.Column(db.Integer, nullable=False)
     total = db.Column(db.Float, nullable=False)
@@ -130,8 +128,6 @@ class OrderProduct(db.Model, BaseModel):
         """Serialize an Order into a dict"""
         return {
             "id": self.id,  
-            "create_time": self.create_time.isoformat(),
-            "update_time": self.update_time.isoformat(),
             "product_id": self.product_id,
             "quantity": self.quantity,
             "total": self.total,
@@ -145,10 +141,10 @@ class OrderProduct(db.Model, BaseModel):
         """
         try:
             self.id = data["id"]
-            self.create_time = data["create_time"]
-            self.update_time = data["update_time"]
             self.product_id = data["product_id"]
             self.quantity = data["quantity"]
+            if self.quantity <= 0:
+                raise DataValidationError("Invalid quantity detected in order product: " + str(data["quantity"]))
             self.total = data["total"]
             self.order_id = data["total"]
         except AttributeError as error:
@@ -168,10 +164,8 @@ class Order(db.Model, BaseModel):
     """
     A Class that represent Order Model
     """
-
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    create_time = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow())
-    update_time = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow())
+    date = db.Column(db.Date(), nullable=False, default=date.today())
     total = db.Column(db.Float, nullable=False)
     payment = db.Column(db.Enum(PaymentMethods), nullable=False)
     address = db.Column(db.String(53), nullable = False)
@@ -185,8 +179,7 @@ class Order(db.Model, BaseModel):
         """Serialize an Order into a dict"""
         order = {
             "id": self.id,
-            "create_time": self.create_time.isoformat(),
-            "update_time": self.update_time.isoformat(),
+            "date": self.date.isoformat(),
             "total": self.total,
             "payment": self.payment.name, # convert enum to string
             "address": self.address,
@@ -207,8 +200,7 @@ class Order(db.Model, BaseModel):
         try:
             # assert(isinstance(data["total"],float), "total")
             self.id = data["id"]
-            self.create_time = datetime.fromisoformat(data["create_time"])
-            self.update_time = datetime.fromisoformat(data["update_time"])
+            self.date = data["date"].isoformat()
             self.total = data["total"]
             self.payment = getattr(PaymentMethods, data["payment"])
             self.customer_id = data["customer_id"]
