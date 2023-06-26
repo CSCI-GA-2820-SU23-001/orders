@@ -29,3 +29,20 @@ def index():
 ######################################################################
 
 # Place your REST API code here ...
+
+######################################################################
+#  CREATE AN ORDER
+######################################################################
+
+@app.route("/orders", methods=["POST"])
+def create_order():
+    app.logger.info("Request to Create order...")
+    order_data = request.get_json()
+    order = Order()
+    order.deserialize(order_data)
+    order.create()
+    app.logger.info("New order %s is created!", order.id)
+
+    res = order.serialize()
+    location_url = url_for("read_orders", order_id = order.id, _external = True)
+    return jsonify(res), status.HTTP_201_CREATED,{"Location": location_url}
