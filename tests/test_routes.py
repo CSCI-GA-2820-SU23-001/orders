@@ -12,7 +12,12 @@ from unittest.mock import MagicMock, patch
 from service import app
 from service.models import db, Order, init_db
 from service.common import status  # HTTP Status Codes
+from tests.factories import OrderFactory, ItemFactory
 
+
+DATABASE_URI = os.getenv(
+    "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
+)
 BASE_URL = "/orders"
 
 ######################################################################
@@ -94,7 +99,6 @@ class TestOrderServer(TestCase):
         logging.debug(data)
         item_id = data["id"]
 
-        #  retrieve it back
         response = self.client.get(
             f"{BASE_URL}/{order.id}/items/{item_id}",
             content_type="application/json",

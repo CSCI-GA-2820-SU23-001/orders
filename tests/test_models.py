@@ -5,7 +5,9 @@ Test cases for Order and OrderModel Model
 import os
 import logging
 import unittest
-from service.models import Order, OrderProduct, DataValidationError, db
+# from service.models import OrderProduct
+from service.models import Order, DataValidationError, db
+
 
 
 ######################################################################

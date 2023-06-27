@@ -43,7 +43,7 @@ def get_orders(order_id):
         abort(status.HTTP_404_NOT_FOUND, f"Order with id '{order_id}' was not found.")
 
     app.logger.info("Returning order: %s", order.name)
-    return jsonify(order.serialize()), status.HTTP_200_OK
+    return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
 
 # ---------------------------------------------------------------------
 #                ITEMS   M E T H O D S
@@ -63,4 +63,4 @@ def get_items(order_id, item_id):
         abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
 
     app.logger.info("Returning item: %s", item.name)
-    return jsonify(item.serialize()), status.HTTP_200_OK
+    return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
