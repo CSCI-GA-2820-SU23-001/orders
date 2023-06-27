@@ -37,7 +37,7 @@ class TestYourResourceServer(TestCase):
         """ This runs after each test """
 
     ######################################################################
-    #  P L A C E   T E S T   C A S E S   H E R E
+    # #  P L A C E   T E S T   C A S E S   H E R E
     ######################################################################
 
     def test_index(self):
@@ -46,16 +46,15 @@ class TestYourResourceServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     ######################################################################
-	#  H E L P E R S   F U N C T I O N S   H E R E
-	######################################################################
+    #  H E L P E R S   F U N C T I O N S   H E R E
+    ######################################################################
 
     def _create_order(self, count):
         """ Method to create orders in bulk
-		param:
-			count -> int: represent the number of orders you want to generate
+            count -> int: represent the number of orders you want to generate
 		"""
         orders = []
-		# Need to implement
+        # Need to implement
 
         return orders
     
@@ -63,3 +62,28 @@ class TestYourResourceServer(TestCase):
     ######################################################################
     #  TESTS FOR LIST ITEMS
     ######################################################################
+
+    def test_list_items(self):
+        order = self._create_orders(1)[0]
+        item = ItemFactory()
+        res = self.client.post(
+            f"/orders/{order.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        data = res.get_json()
+        logging.debug(data)
+        item_id = data["id"]
+
+        res = self.client.get(
+            f"/orders/{order.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        data = res.get_json()
+        logging.debug(data)
+        self.assertEqual(data["order_id"], order.id)
+        self.assertEqual(data["quantity"], item.quantity)
