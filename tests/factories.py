@@ -16,7 +16,7 @@ class OrderFactory(factory.Factory):
     payment = FuzzyChoice(choices=["CREDITCARD", "DEBITCARD", "VEMO"])
     address = factory.Faker("address")
     customer_id = factory.Faker('random_int', min=10000, max=99999)
-    status = FuzzyChoice(choices=["OPEN", "SHIPPING", "DELIVERED", "CANCALLED"])
+    status = FuzzyChoice(choices=["OPEN", "SHIPPING", "DELIVERED", "CANCELLED"])
 
     @factory.post_generation
     def items(self, create, extracted, **kwargs):   # pylint: disable=method-hidden, unused-argument

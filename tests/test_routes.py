@@ -49,7 +49,6 @@ class TestOrderServer(TestCase):
         """ This runs after each test """
         db.session.remove()
 
-
     ######################################################################
     #  C A S E S   H E R E
     ######################################################################
@@ -100,7 +99,7 @@ class TestOrderServer(TestCase):
         item_id = data["id"]
 
         response = self.client.get(
-            f"{BASE_URL}/{order.id}/items/{item_id}",
+            f"{BASE_URL}/{test_order.id}/items/{item_id}",
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
