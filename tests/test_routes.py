@@ -49,7 +49,29 @@ class TestOrderServer(TestCase):
     def tearDown(self):
         """ This runs after each test """
         db.session.remove()
+    
+    ######################################################################
+    #  H E L P E R S   F U N C T I O N S   H E R E
+    ######################################################################
 
+    def _create_orders(self, count):
+        """ Method to create orders in bulk
+            count -> int: represent the number of orders you want to generate
+		"""
+        orders = []
+        # Need to implement
+
+        return orders
+    
+    def _create_items(self, count):
+        """ Method to create items in bulk
+            count -> int: represent the number of items you want to generate
+		"""
+        items = []
+        # Need to implement
+
+        return items
+    
     ######################################################################
     # #  P L A C E   T E S T   C A S E S   H E R E
     ######################################################################
@@ -60,21 +82,27 @@ class TestOrderServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     ######################################################################
-    #  H E L P E R S   F U N C T I O N S   H E R E
+    #  O R D E R S  T E S T  C A S E
     ######################################################################
+    def test_delete_orders(self):
+        """It should Delete an Order"""
+        order = self._create_orders(1)[0]
+        res = self.client.post(
+            f"/orders",
+            json=order.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-    def _create_order(self, count):
-        """ Method to create orders in bulk
-            count -> int: represent the number of orders you want to generate
-		"""
-        orders = []
-        # Need to implement
+        data = res.get_json()
+        logging.debug(data)
+        order_id = data["id"]
 
-        return orders
-    
+        resp = self.client.delete(f"orders/{order_id}")
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
     ######################################################################
-    #  TESTS FOR LIST ITEMS
+    #  I T E M S  T E S T  C A S E
     ######################################################################
 
     def test_list_items(self):
@@ -151,3 +179,33 @@ class TestOrderServer(TestCase):
         logging.debug(data)
         self.assertEqual(data["order_id"], test_order.id)
         self.assertEqual(data["id"], item.id)
+
+    
+    def test_delete_items(self):
+        """It should Delete an Item"""
+        # get the id of an account
+        order = self._create_orders(1)[0]
+        item = ItemFactory()
+        resp = self.client.post(
+            f"orders/{order.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        data = resp.get_json()
+        logging.debug(data)
+        item_id = data["id"]
+
+        # send delete request
+        resp = self.client.delete(
+            f"orders/{order.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+        # retrieve it back and make sure address is not there
+        resp = self.client.get(
+            f"orders/{order.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)

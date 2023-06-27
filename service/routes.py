@@ -36,7 +36,7 @@ def index():
 ######################################################################
 
 @app.route("/orders", methods=["POST"])
-def create_order():
+def create_orders():
     app.logger.info("Request to Create order...")
     order_data = request.get_json()
     order = Order()
@@ -48,11 +48,24 @@ def create_order():
     location_url = url_for("read_orders", order_id = order.id, _external = True)
     return jsonify(res), status.HTTP_201_CREATED,{"Location": location_url}
 
+######################################################################
+#  DELETE AN ORDER
+######################################################################
+@app.route("/orders/<int:order_id>", methods=["DELETE"])
+def delete_orders(order_id):
+    app.logger.info("Request to delete order with id: %s", order_id)
+    account = Order.find(order_id)
+    if account:
+        account.delete()
+    return make_response("", status.HTTP_204_NO_CONTENT)
 
 
+# ---------------------------------------------------------------------
+#                I T E M S   M E T H O D S
+# ---------------------------------------------------------------------
 
 ######################################################################
-# LIST ORDER ITEMS
+# LIST AN ITEM
 ######################################################################
 
 @app.route("/orders/<int:order_id>/items", methods=["GET"])
@@ -103,3 +116,15 @@ def get_items(order_id, item_id):
 
     app.logger.info("Returning item: %s", item.id)
     return jsonify(item.serialize()), status.HTTP_200_OK
+
+######################################################################
+# DELETE AN ITEM
+######################################################################
+@app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["DELETE"])
+def delete_items(order_id, item_id):
+    app.logger.info("Request to delete Item %s for Order id: %s", item_id, order_id)
+    address = Item.find(item_id)
+    if address:
+        address.delete()
+
+    return make_response("", status.HTTP_204_NO_CONTENT)
