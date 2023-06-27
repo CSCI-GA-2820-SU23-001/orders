@@ -64,4 +64,4 @@ def list_items(order_id):
             f"Order with id '{order_id}' cannot be found.",
         )
     res = [item.serialize() for item in order.items]
-    return make_response(jsonify(ress), status.HTTP_200_OK)
+    return make_response(jsonify(res), status.HTTP_200_OK)
