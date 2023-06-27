@@ -168,7 +168,7 @@ class Order(db.Model, BaseModel):
     date = db.Column(db.Date(), nullable=False, default=date.today())
     total = db.Column(db.Float, nullable=False)
     payment = db.Column(db.Enum(PaymentMethods), nullable=False)
-    address = db.Column(db.String(53), nullable = False)
+    address = db.Column(db.String(100), nullable = False)
     customer_id = db.Column(db.Integer, nullable=False) # should be set as ForeignKey db.ForeignKey('customer.id'), but this will give "table not found" error 
     status = db.Column(
         db.Enum(ShipmentStatus), nullable=False, server_default=(ShipmentStatus.OPEN.name)
