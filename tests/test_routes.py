@@ -60,8 +60,9 @@ class TestOrderServer(TestCase):
 		"""
         orders = []
         # Need to implement
-
+    
         return orders
+    
     
     def _create_items(self, count):
         """ Method to create items in bulk
@@ -84,6 +85,23 @@ class TestOrderServer(TestCase):
     ######################################################################
     #  O R D E R S  T E S T  C A S E
     ######################################################################
+    
+    def test_get_order(self):
+        """It should Read a single Order"""
+        # get the id of an order
+        test_order = self._create_orders(1)[0]
+        response = self.client.get(
+            f"{BASE_URL}/{test_order.id}", content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data["id"], test_order.id)
+
+    def test_get_order_not_found(self):
+        """It should not Read an Order that is not found"""
+        response = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_delete_orders(self):
         """It should Delete an Order"""
         order = self._create_orders(1)[0]
@@ -129,29 +147,7 @@ class TestOrderServer(TestCase):
         logging.debug(data)
         self.assertEqual(data["order_id"], order.id)
         self.assertEqual(data["quantity"], item.quantity)
-    ######################################################################
-    #  TESTS FOR READ ORDER
-    ######################################################################
-    def test_get_order(self):
-        """It should Read a single Order"""
-        # get the id of an order
-        test_order = self._create_orders(1)[0]
-        response = self.client.get(
-            f"{BASE_URL}/{test_order.id}", content_type="application/json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.get_json()
-        self.assertEqual(data["id"], test_order.id)
 
-    def test_get_order_not_found(self):
-        """It should not Read an Order that is not found"""
-        response = self.client.get(f"{BASE_URL}/0")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-
-    ######################################################################
-    #  TESTS FOR READ ITEM
-    ######################################################################
 
     def test_get_item(self):
         """It should Read an item from an order"""
