@@ -59,17 +59,12 @@ tests/              - test cases package
 ```text
 Endpoint          Method       Rule
 ----------------  -------      -----------------------------------------------------
-create_orders     POST         
-get_orders        GET  
 list_orders       GET          /orders        
-update_orders     PUT          
-delete_orders     DELETE  
+ 
 
-create_items      POST     
-get_items         GET  
+ 
 list_items        GET          /orders/<int:order_id>/items    
-update_items      PUT      
-delete_items      DELETE   
+ 
 
 ```
 
