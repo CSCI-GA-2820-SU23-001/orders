@@ -46,3 +46,22 @@ def create_order():
     res = order.serialize()
     location_url = url_for("read_orders", order_id = order.id, _external = True)
     return jsonify(res), status.HTTP_201_CREATED,{"Location": location_url}
+
+
+
+
+######################################################################
+# LIST ORDER ITEMS
+######################################################################
+
+@app.route("/orders/<int:order_id>/items", methods=["GET"])
+def list_items(order_id):
+    app.logger.info("Request to list all Items for an order with id: %s", order_id)
+    order = Order.find(order_id)
+    if not order:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Order with id '{order_id}' cannot be found.",
+        )
+    res = [item.serialize() for item in order.items]
+    return make_response(jsonify(res), status.HTTP_200_OK)
