@@ -47,6 +47,19 @@ def create_orders():
     location_url = url_for("read_orders", order_id = order.id, _external = True)
     return jsonify(res), status.HTTP_201_CREATED,{"Location": location_url}
 
+
+######################################################################
+#  LIST ALL ORDERS
+######################################################################
+@app.route("/orders", methods=["GET"])
+def list_orders():
+    app.logger.info("Request to list all orders")
+    orders = Order.all()
+    res = [order.serialize() for order in orders]
+    app.logger.info("[%s] orders returned", len(res))
+    return make_response(jsonify(res), status.HTTP_200_OK)
+
+
 ######################################################################
 #  DELETE AN ORDER
 ######################################################################
@@ -64,7 +77,7 @@ def delete_orders(order_id):
 # ---------------------------------------------------------------------
 
 ######################################################################
-# LIST AN ITEM
+# LIST ALL ITEMS
 ######################################################################
 
 @app.route("/orders/<int:order_id>/items", methods=["GET"])
