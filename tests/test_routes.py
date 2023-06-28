@@ -10,9 +10,11 @@ import logging
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from service import app
-from service.models import db, Order, Item
+from service.models import db, Order, Item, init_db
 from tests.factories import ItemFactory, OrderFactory
 from service.common import status  # HTTP Status Codes
+from datetime import date
+from itertools import cycle
 
 
 ######################################################################
@@ -23,18 +25,27 @@ class TestYourResourceServer(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """ This runs once before the entire test suite """
+        """Run once before all tests"""
+        app.config["TESTING"] = True
+        app.config["DEBUG"] = False
+        # app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
+        app.logger.setLevel(logging.CRITICAL)
+        init_db(app)
 
     @classmethod
     def tearDownClass(cls):
-        """ This runs once after the entire test suite """
+        """Runs once after test suite"""
 
     def setUp(self):
-        """ This runs before each test """
+        """Runs before each test"""
+        db.session.query(Order).delete()  # clean up the last tests
+        db.session.commit()
+
         self.client = app.test_client()
 
     def tearDown(self):
-        """ This runs after each test """
+        """Runs once after each test case"""
+        db.session.remove()
     
     ######################################################################
     #  H E L P E R S   F U N C T I O N S   H E R E
@@ -46,6 +57,25 @@ class TestYourResourceServer(TestCase):
 		"""
         orders = []
         # Need to implement
+        # Define the constant status values
+        status_values = ["OPEN","SHIPPING","DELIVERED","CANCELLED"]
+        # Create a cycle iterator for status values
+        status_cycle = cycle(status_values)
+
+        for _ in range(count):
+            # Get the next status value from the cycle
+            status_value = next(status_cycle)
+            # Pass the status value to the factory
+            order = OrderFactory(status=status_value)
+            resp = self.client.post("/orders", json=order.serialize())
+            self.assertEqual(
+                resp.status_code,
+                status.HTTP_201_CREATED,
+                "Could not create test Order",
+            )
+            new_order = resp.get_json()
+            order.id = new_order["id"]
+            orders.append(order)
 
         return orders
     
@@ -54,7 +84,22 @@ class TestYourResourceServer(TestCase):
             count -> int: represent the number of items you want to generate
 		"""
         items = []
-        # Need to implement
+        status_cycle = cycle(status_values)
+        
+        for _ in range(count):
+            # Get the next status value from the cycle
+            status_value = next(status_cycle)
+            # Pass the status value to the factory
+            item = ItemFactory(status=status_value)
+            resp = self.client.post("/orders/", json=order.serialize())
+            self.assertEqual(
+                resp.status_code,
+                status.HTTP_201_CREATED,
+                "Could not create test items",
+            )
+            new_item = resp.get_json()
+            item.id = new_item["id"]
+            items.append(item)
 
         return items
     
@@ -70,6 +115,51 @@ class TestYourResourceServer(TestCase):
     ######################################################################
     #  O R D E R S  T E S T  C A S E
     ######################################################################
+    def test_create_orders(self):
+        """ It should create an order """
+        order = OrderFactory()
+        res = self.client.post(
+            "/orders",
+            json = order.serialize(), 
+            content_type = "application/json"
+        )
+        
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        orders = Order.all()
+        self.assertEqual(len(orders), 1)
+        self.assertIsNotNone(orders[0].id)
+
+        location = res.headers.get("location", None)
+        self.assertIsNotNone(location)
+
+        data = res.get_json()
+        self.assertEqual(data["date"], order.date,"date does not match")
+        self.assertEqual(data["total"],order.total, "total price does not match")
+        # self.assertEqual(data["payment"],order.payment, "payment does not match")
+        self.assertEqual(data["address"],order.address, "address does not match")
+        # self.assertEqual(data["customer_id"],order.customer_id, "customer_id does not match")
+        # self.assertEqual(data["status"],order.status, "status does not match")
+
+    def test_create_order_missing_info(self):
+        """
+        It should fail if the call has some missing information.
+        """
+        res = self.client.post(
+            "/orders",
+            json={
+                "payment": "CREDITCARD",
+                "address": "Main St",
+                "customer_id": 5,
+                "status": "OPEN",
+                "products": []
+            },
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        orders = Order.all()
+        self.assertEqual(len(orders), 0)
+
     def test_delete_orders(self):
         """It should Delete an Order"""
         order = self._create_orders(1)[0]

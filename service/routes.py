@@ -44,7 +44,7 @@ def create_orders():
     app.logger.info("New order %s is created!", order.id)
 
     res = order.serialize()
-    location_url = url_for("read_orders", order_id = order.id, _external = True)
+    location_url = url_for("get_orders", order_id = order.id, _external = True)
     return jsonify(res), status.HTTP_201_CREATED,{"Location": location_url}
 
 ######################################################################
@@ -58,6 +58,29 @@ def delete_orders(order_id):
         account.delete()
     return make_response("", status.HTTP_204_NO_CONTENT)
 
+
+######################################################################
+# READ AN ORDER
+######################################################################
+
+
+@app.route("/orders/<int:order_id>", methods=["GET"])
+def get_orders(order_id):
+    """
+    Retrieve a single Order
+    This endpoint will return an Order based on its id
+    """
+    app.logger.info("Request for Order with id: %s", order_id)
+
+    # See if the order exists and abort if it doesn't
+    order = Order.find(order_id)
+    if not order:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Order with id '{order_id}' could not be found.",
+        )
+    app.logger.info("Returning order: %s", order.name)
+    return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
 
 # ---------------------------------------------------------------------
 #                I T E M S   M E T H O D S
