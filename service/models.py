@@ -122,7 +122,7 @@ class Item(db.Model, BaseModel):
             if self.quantity <= 0:
                 raise DataValidationError("Invalid quantity detected in order product: " + str(data["quantity"]))
             self.total = data["total"]
-            self.order_id = data["total"]
+            self.order_id = data["order_id"]
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
@@ -144,7 +144,7 @@ class Order(db.Model, BaseModel):
     date = db.Column(db.Date(), nullable=False, default=date.today())
     total = db.Column(db.Float, nullable=False)
     payment = db.Column(
-        db.Enum("CREDITCARD","DEBITCARD", "VEMO", name="payment_enum"), 
+        db.Enum("CREDITCARD","DEBITCARD", "VEMO", name="payment_enum"),
         nullable=False
     )
     address = db.Column(db.String(100), nullable = False)
@@ -156,6 +156,9 @@ class Order(db.Model, BaseModel):
     )
     products = db.relationship("Item", backref="order", passive_deletes=True)
     
+    def __repr__(self):
+        return f"<Order id=[{self.id}]>"
+
     def serialize(self) -> dict:
         """Serialize an Order into a dict"""
         order = {
@@ -180,10 +183,10 @@ class Order(db.Model, BaseModel):
         """
         try:
             # assert(isinstance(data["total"],float), "total")
-            self.id = data["id"]
-            self.date = data["date"].isoformat()
             self.total = data["total"]
+            self.date = data["date"]
             self.payment = data.get("payment")
+            self.address = data["address"]
             self.customer_id = data["customer_id"]
             self.status = data.get("status")
             products = data["products"]
