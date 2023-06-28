@@ -70,6 +70,16 @@ class TestYourResourceServer(TestCase):
     ######################################################################
     #  O R D E R S  T E S T  C A S E
     ######################################################################
+
+    def test_update_orders(self):
+        order = self._create_orders(1)[0]
+        res = self.client.put(
+            f"/orders/{order.id}",
+            json=order.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
     def test_delete_orders(self):
         """It should Delete an Order"""
         order = self._create_orders(1)[0]
