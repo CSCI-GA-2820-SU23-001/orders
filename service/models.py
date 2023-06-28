@@ -144,13 +144,13 @@ class Order(db.Model, BaseModel):
     date = db.Column(db.Date(), nullable=False, default=date.today())
     total = db.Column(db.Float, nullable=False)
     payment = db.Column(
-        Enum("CREDITCARD","DEBITCARD", "VEMO"), 
+        db.Enum("CREDITCARD","DEBITCARD", "VEMO", name="payment_enum"), 
         nullable=False
     )
     address = db.Column(db.String(100), nullable = False)
     customer_id = db.Column(db.Integer, nullable=False) # should be set as ForeignKey db.ForeignKey('customer.id'), but this will give "table not found" error 
     status = db.Column(
-        Enum("OPEN","SHIPPING","DELIVERED","CANCELLED"), 
+        db.Enum("OPEN","SHIPPING","DELIVERED","CANCELLED", name="status_enum"), 
         nullable=False, 
         server_default="OPEN"
     )
@@ -183,9 +183,9 @@ class Order(db.Model, BaseModel):
             self.id = data["id"]
             self.date = data["date"].isoformat()
             self.total = data["total"]
-            self.payment = getattr(PaymentMethods, data["payment"])
+            self.payment = data.get("payment")
             self.customer_id = data["customer_id"]
-            self.status = getattr(ShipmentStatus, data["status"])
+            self.status = data.get("status")
             products = data["products"]
             for json_product in products:
                 product = Item()
