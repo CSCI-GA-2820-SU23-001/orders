@@ -55,6 +55,19 @@ tests/              - test cases package
 └── test_routes.py  - test suite for service routes
 ```
 
+## RESTful routes for orders and items
+```text
+Endpoint          Method       Rule
+----------------  -------      -----------------------------------------------------
+list_orders       GET          /orders        
+ 
+
+ 
+list_items        GET          /orders/<int:order_id>/items    
+ 
+
+```
+
 ## License
 
 Copyright (c) John Rofrano. All rights reserved.

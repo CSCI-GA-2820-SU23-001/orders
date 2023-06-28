@@ -24,21 +24,6 @@ def init_db(app):
 class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
 
-class ShipmentStatus(Enum):
-    """Enumeration of order status"""
-    
-    OPEN = 0
-    SHIPPING = 1
-    DELIVERED = 2
-    CANCELLED = 3
-
-class PaymentMethods(Enum):
-    """Enumeration of order status"""
-    
-    CREDITCARD = 0
-    DEBITCARD = 1
-    VEMO = 2
-
 class BaseModel:
     """
     A base class of data model that other order and Item models can inherit from
@@ -67,12 +52,12 @@ class BaseModel:
         """
         Updates a Order to the database
         """
-        logger.info("Saving %s", self.name)
+        logger.info("Saving %s", self.id)
         db.session.commit()
 
     def delete(self):
         """ Removes a Order from the data store """
-        logger.info("Deleting %s", self.name)
+        logger.info("Deleting %s", self.id)
         db.session.delete(self)
         db.session.commit()
 
@@ -98,15 +83,6 @@ class BaseModel:
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
 
-    @classmethod
-    def find_by_name(cls, name):
-        """Returns all Orders with the given name
-
-        Args:
-            name (string): the name of the Orders you want to match
-        """
-        logger.info("Processing name query for %s ...", name)
-        return cls.query.filter(cls.name == name)
 
 #################################################dwd#
 # Item MODEL
@@ -167,11 +143,16 @@ class Order(db.Model, BaseModel):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     date = db.Column(db.Date(), nullable=False, default=date.today())
     total = db.Column(db.Float, nullable=False)
-    payment = db.Column(db.Enum(PaymentMethods), nullable=False)
-    address = db.Column(db.String(53), nullable = False)
+    payment = db.Column(
+        Enum("CREDITCARD","DEBITCARD", "VEMO"), 
+        nullable=False
+    )
+    address = db.Column(db.String(100), nullable = False)
     customer_id = db.Column(db.Integer, nullable=False) # should be set as ForeignKey db.ForeignKey('customer.id'), but this will give "table not found" error 
     status = db.Column(
-        db.Enum(ShipmentStatus), nullable=False, server_default=(ShipmentStatus.OPEN.name)
+        Enum("OPEN","SHIPPING","DELIVERED","CANCELLED"), 
+        nullable=False, 
+        server_default="OPEN"
     )
     products = db.relationship("Item", backref="order", passive_deletes=True)
     
@@ -181,10 +162,10 @@ class Order(db.Model, BaseModel):
             "id": self.id,
             "date": self.date.isoformat(),
             "total": self.total,
-            "payment": self.payment.name, # convert enum to string
+            "payment": self.payment,
             "address": self.address,
             "customer_id": self.customer_id,
-            "status": self.status.name, # convert enum to string
+            "status": self.status,
             "products": []
         }
         for product in self.products:
