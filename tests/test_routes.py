@@ -72,6 +72,7 @@ class TestYourResourceServer(TestCase):
     ######################################################################
 
     def test_list_orders(self):
+        """Test the list orders"""
         self._create_orders(4)
         resp = self.client.get("/orders")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -101,6 +102,7 @@ class TestYourResourceServer(TestCase):
     ######################################################################
 
     def test_list_items(self):
+        """Test the list items for an order"""
         order = self._create_orders(1)[0]
         item = ItemFactory()
         res = self.client.post(
