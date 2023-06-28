@@ -60,11 +60,11 @@ tests/              - test cases package
 Endpoint          Method       Rule
 ----------------  -------      -----------------------------------------------------
 list_orders       GET          /orders        
- 
+get_orders        GET          /orders/<order_id>
 
  
 list_items        GET          /orders/<int:order_id>/items    
- 
+get_items         GET          /orders/<order_id>/items/<item_id>
 
 ```
 

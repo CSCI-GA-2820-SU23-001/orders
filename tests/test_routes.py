@@ -17,10 +17,15 @@ from datetime import date
 from itertools import cycle
 
 
+DATABASE_URI = os.getenv(
+    "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
+)
+BASE_URL = "/orders"
+
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
-class TestYourResourceServer(TestCase):
+class TestOrderServer(TestCase):
     """ REST API Server Tests """
 
     @classmethod
@@ -42,6 +47,8 @@ class TestYourResourceServer(TestCase):
         db.session.commit()
 
         self.client = app.test_client()
+        db.session.query(Order).delete()  # clean up the last tests
+        db.session.commit()
 
     def tearDown(self):
         """Runs once after each test case"""
@@ -150,6 +157,23 @@ class TestYourResourceServer(TestCase):
         self.assertEqual(len(data), 4)
 
 
+    
+    def test_get_order(self):
+        """It should Read a single Order"""
+        # get the id of an order
+        test_order = self._create_orders(1)[0]
+        response = self.client.get(
+            f"{BASE_URL}/{test_order.id}", content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data["id"], test_order.id)
+
+    def test_get_order_not_found(self):
+        """It should not Read an Order that is not found"""
+        response = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_delete_orders(self):
         """It should Delete an Order"""
         order = self._create_orders(1)[0]
@@ -221,6 +245,35 @@ class TestYourResourceServer(TestCase):
         logging.debug(data)
         self.assertEqual(data["order_id"], order.id)
         self.assertEqual(data["quantity"], item.quantity)
+
+
+    def test_get_item(self):
+        """It should Read an item from an order"""
+
+        test_order = self._create_orders(1)[0]
+        item = ItemFactory()
+        response = self.client.post(
+            f"{BASE_URL}/{test_order.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = response.get_json()
+        logging.debug(data)
+        item_id = data["id"]
+
+        response = self.client.get(
+            f"{BASE_URL}/{test_order.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = response.get_json()
+        logging.debug(data)
+        self.assertEqual(data["order_id"], test_order.id)
+        self.assertEqual(data["id"], item.id)
+
     
     ######################################################################
     #  TEST DELETE ITEMS
