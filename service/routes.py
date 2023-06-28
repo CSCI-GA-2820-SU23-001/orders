@@ -28,7 +28,9 @@ def index():
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 
-# Place your REST API code here ...
+# ---------------------------------------------------------------------
+#               O R D E R  M E T H O D S
+# ---------------------------------------------------------------------
 
 ######################################################################
 #  CREATE AN ORDER
@@ -85,6 +87,37 @@ def get_orders(order_id):
 # ---------------------------------------------------------------------
 #                I T E M S   M E T H O D S
 # ---------------------------------------------------------------------
+######################################################################
+# ADD AN ITEM
+######################################################################
+
+@app.route("/orders/<int:order_id>/items", methods=["POST"])
+def create_items(order_id):
+    """
+    Create an Item on an Order
+    This endpoint will add an item to an order
+    """
+    app.logger.info("Request to create an Item for Order with id: %s", order_id)
+    # See if the order exists and abort if it doesn't
+    order = Order.find(order_id)
+    if not order:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Order with id '{order_id}' could not be found.",
+        )
+
+    # Create an item from the json data
+    item = Item()
+    item.deserialize(request.get_json())
+
+    # Append the item to the order
+    order.products.append(item)
+    order.update()
+
+    # Prepare a message to return
+    message = item.serialize()
+
+    return make_response(jsonify(message), status.HTTP_201_CREATED)
 
 ######################################################################
 # LIST AN ITEM

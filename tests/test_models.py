@@ -11,7 +11,7 @@ from tests.factories import OrderFactory, ItemFactory
 
 
 ######################################################################
-#  YourResourceModel   M O D E L   T E S T   C A S E S
+#  O R D E R   M O D E L   T E S T   C A S E S
 ######################################################################
 class TestOrder(unittest.TestCase):
     """ Test Cases for Order Model """
@@ -47,8 +47,12 @@ class TestOrder(unittest.TestCase):
         """ It should always be true """
         self.assertTrue(True)
 
+    # ---------------------------------------------------------------------
+    #               O R D E R  M E T H O D S
+    # ---------------------------------------------------------------------
+
     ######################################################################
-    #  TEST CEREATE ORDER
+    #  TEST CREATE / ADD ORDER
     ######################################################################
     def test_create_an_order(self):
         """ It should Create an Order and assert that it exists """
@@ -84,6 +88,10 @@ class TestOrder(unittest.TestCase):
         orders = Order.all()
         self.assertEqual(len(orders), 1)
 
+    
+    ######################################################################
+    #  TEST SERIALIZE / DESERIALIZE ORDER
+    ######################################################################
     def test_serialize_an_order(self):
         """It should Serialize an order"""
         order = OrderFactory()
@@ -114,12 +122,12 @@ class TestOrder(unittest.TestCase):
         serial_order = order.serialize()
         new_order = Order()
         new_order.deserialize(serial_order)
-        # self.assertEqual(new_order["total"], order.total)
-        # self.assertEqual(new_order["date"], order.date)
-        self.assertEqual(new_order["payment"], order.payment)
-        self.assertEqual(new_order["address"], order.address)
-        self.assertEqual(new_order["customer_id"], order.customer_id)
-        self.assertEqual(new_order["status"], order.status)
+        self.assertEqual(new_order.total, order.total)
+        # self.assertEqual(new_order.date, order.date)
+        self.assertEqual(new_order.payment, order.payment)
+        self.assertEqual(new_order.address, order.address)
+        self.assertEqual(new_order.customer_id, order.customer_id)
+        self.assertEqual(new_order.status, order.status)
         
 
     def test_deserialize_with_key_error(self):
@@ -141,3 +149,39 @@ class TestOrder(unittest.TestCase):
         """It should not Deserialize an item with a TypeError"""
         item = Item()
         self.assertRaises(DataValidationError, item.deserialize, [])
+
+    # ---------------------------------------------------------------------
+    #               I T E M  M E T H O D S
+    # ---------------------------------------------------------------------
+
+    ######################################################################
+    #  TEST ADD ORDER ITEMS
+    ######################################################################
+    def test_add_order_item(self):
+        """It should Create an order with an item and add it to the database"""
+        orders = Order.all()
+        self.assertEqual(orders, [])
+        order = OrderFactory()
+        item = ItemFactory(order=order)
+        order.products.append(item)
+        order.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(order.id)
+        orders = Order.all()
+        self.assertEqual(len(orders), 1)
+
+        new_order = Order.find(order.id)
+        self.assertEqual(len(new_order.products), 1)
+        self.assertEqual(new_order.products[0].product_id, item.product_id)
+        self.assertEqual(new_order.products[0].quantity, item.quantity)
+        self.assertEqual(new_order.products[0].total, item.total)
+
+        item2 = ItemFactory(order=order)
+        order.products.append(item2)
+        order.update()
+
+        new_order = Order.find(order.id)
+        self.assertEqual(len(new_order.products), 2)
+        self.assertEqual(new_order.products[1].product_id, item2.product_id)
+        self.assertEqual(new_order.products[1].quantity, item2.quantity)
+        self.assertEqual(new_order.products[1].total, item2.total)
