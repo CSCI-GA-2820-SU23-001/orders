@@ -70,6 +70,15 @@ class TestYourResourceServer(TestCase):
     ######################################################################
     #  O R D E R S  T E S T  C A S E
     ######################################################################
+
+    def test_list_orders(self):
+        self._create_orders(4)
+        resp = self.client.get("/orders")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 4)
+
+
     def test_delete_orders(self):
         """It should Delete an Order"""
         order = self._create_orders(1)[0]
