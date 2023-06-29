@@ -135,7 +135,7 @@ class TestOrderServer(TestCase):
         res = self.client.post(
             "/orders",
             json={
-                "products": []
+                "items": []
             },
             content_type="application/json",
         )
