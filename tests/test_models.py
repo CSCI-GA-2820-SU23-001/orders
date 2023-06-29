@@ -96,7 +96,7 @@ class TestOrder(unittest.TestCase):
         """It should Serialize an order"""
         order = OrderFactory()
         item = ItemFactory()
-        order.products.append(item)
+        order.items.append(item)
         serial_order = order.serialize()
         self.assertEqual(serial_order["id"], order.id)
         self.assertEqual(serial_order["date"], str(order.date))
@@ -105,8 +105,8 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(serial_order["address"], order.address)
         self.assertEqual(serial_order["customer_id"], order.customer_id)
         self.assertEqual(serial_order["status"], str(order.status))
-        self.assertEqual(len(serial_order["products"]), 1)
-        items = serial_order["products"]
+        self.assertEqual(len(serial_order["items"]), 1)
+        items = serial_order["items"]
         self.assertEqual(items[0]["id"], item.id)
         self.assertEqual(items[0]["product_id"],item.product_id)
         self.assertEqual(items[0]["quantity"], item.quantity)
@@ -117,7 +117,7 @@ class TestOrder(unittest.TestCase):
     def test_deserialize_an_order(self):
         """It should Deserialize an order"""
         order = OrderFactory()
-        order.products.append(ItemFactory())
+        order.items.append(ItemFactory())
         order.create()
         serial_order = order.serialize()
         new_order = Order()
@@ -163,7 +163,7 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(orders, [])
         order = OrderFactory()
         item = ItemFactory(order=order)
-        order.products.append(item)
+        order.items.append(item)
         order.create()
         # Assert that it was assigned an id and shows up in the database
         self.assertIsNotNone(order.id)
@@ -171,20 +171,20 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(len(orders), 1)
 
         new_order = Order.find(order.id)
-        self.assertEqual(len(new_order.products), 1)
-        self.assertEqual(new_order.products[0].product_id, item.product_id)
-        self.assertEqual(new_order.products[0].quantity, item.quantity)
-        self.assertEqual(new_order.products[0].total, item.total)
+        self.assertEqual(len(new_order.items), 1)
+        self.assertEqual(new_order.items[0].product_id, item.product_id)
+        self.assertEqual(new_order.items[0].quantity, item.quantity)
+        self.assertEqual(new_order.items[0].total, item.total)
 
         item2 = ItemFactory(order=order)
-        order.products.append(item2)
+        order.items.append(item2)
         order.update()
 
         new_order = Order.find(order.id)
-        self.assertEqual(len(new_order.products), 2)
-        self.assertEqual(new_order.products[1].product_id, item2.product_id)
-        self.assertEqual(new_order.products[1].quantity, item2.quantity)
-        self.assertEqual(new_order.products[1].total, item2.total)
+        self.assertEqual(len(new_order.items), 2)
+        self.assertEqual(new_order.items[1].product_id, item2.product_id)
+        self.assertEqual(new_order.items[1].quantity, item2.quantity)
+        self.assertEqual(new_order.items[1].total, item2.total)
     def test_read_an_order(self):
         """It should Read an Order"""
         order = OrderFactory()

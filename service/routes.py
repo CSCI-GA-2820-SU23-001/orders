@@ -123,7 +123,7 @@ def create_items(order_id):
     item.deserialize(request.get_json())
 
     # Append the item to the order
-    order.products.append(item)
+    order.items.append(item)
     order.update()
 
     # Prepare a message to return
