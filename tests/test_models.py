@@ -88,6 +88,31 @@ class TestOrder(unittest.TestCase):
         orders = Order.all()
         self.assertEqual(len(orders), 1)
 
+
+    def test_read_an_order(self):
+        """It should Read an Order"""
+        order = OrderFactory()
+        order.create()
+        found_order = Order.find(order.id)
+
+        self.assertIsNotNone(order)
+        self.assertEqual(found_order.id, order.id)
+        self.assertEqual(found_order.date, order.date)
+        self.assertEqual(found_order.total, order.total)
+        self.assertEqual(found_order.payment, order.payment)
+        self.assertEqual(found_order.address, order.address)
+        self.assertEqual(found_order.customer_id, order.customer_id)
+        self.assertEqual(found_order.status, order.status)
+
+    def test_list_all_orders(self):
+        """It should list all orders in the database"""
+        orders = Order.all()
+        self.assertEqual(orders, [])
+        for order in OrderFactory.create_batch(3):
+            order.create()
+        orders = Order.all()
+        self.assertEqual(len(orders), 3)
+        
     
     ######################################################################
     #  TEST SERIALIZE / DESERIALIZE ORDER
@@ -185,17 +210,20 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(new_order.items[1].product_id, item2.product_id)
         self.assertEqual(new_order.items[1].quantity, item2.quantity)
         self.assertEqual(new_order.items[1].total, item2.total)
-    def test_read_an_order(self):
-        """It should Read an Order"""
-        order = OrderFactory()
-        order.create()
-        found_order = Order.find(order.id)
+    
 
-        self.assertIsNotNone(order)
-        self.assertEqual(found_order.id, order.id)
-        self.assertEqual(found_order.date, order.date)
-        self.assertEqual(found_order.total, order.total)
-        self.assertEqual(found_order.payment, order.payment)
-        self.assertEqual(found_order.address, order.address)
-        self.assertEqual(found_order.customer_id, order.customer_id)
-        self.assertEqual(found_order.status, order.status)
+
+    def test_list_all_items(self):
+        """It should list all items for an order"""
+        order = OrderFactory()
+        item1 = ItemFactory(order=order)
+        order.items.append(item1)
+        item2 = ItemFactory(order=order)
+        order.items.append(item2)
+        item3 = ItemFactory(order=order)
+        order.items.append(item3)
+        order.create()
+        items = Item.all()
+        self.assertEqual(len([item for item in items]), 3)
+
+        
