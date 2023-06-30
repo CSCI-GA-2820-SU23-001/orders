@@ -122,7 +122,7 @@ class Item(db.Model, BaseModel):
             if self.quantity <= 0:
                 raise DataValidationError("Invalid quantity detected in order product: " + str(data["quantity"]))
             self.total = data["total"]
-            self.order_id = data["total"]
+            self.order_id = data["order_id"]
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
@@ -144,18 +144,21 @@ class Order(db.Model, BaseModel):
     date = db.Column(db.Date(), nullable=False, default=date.today())
     total = db.Column(db.Float, nullable=False)
     payment = db.Column(
-        Enum("CREDITCARD","DEBITCARD", "VEMO"), 
+        db.Enum("CREDITCARD","DEBITCARD", "VEMO", name="payment_enum"),
         nullable=False
     )
     address = db.Column(db.String(100), nullable = False)
     customer_id = db.Column(db.Integer, nullable=False) # should be set as ForeignKey db.ForeignKey('customer.id'), but this will give "table not found" error 
     status = db.Column(
-        Enum("OPEN","SHIPPING","DELIVERED","CANCELLED"), 
+        db.Enum("OPEN","SHIPPING","DELIVERED","CANCELLED", name="status_enum"), 
         nullable=False, 
         server_default="OPEN"
     )
-    products = db.relationship("Item", backref="order", passive_deletes=True)
+    items = db.relationship("Item", backref="order", passive_deletes=True)
     
+    def __repr__(self):
+        return f"<Order id=[{self.id}]>"
+
     def serialize(self) -> dict:
         """Serialize an Order into a dict"""
         order = {
@@ -166,10 +169,10 @@ class Order(db.Model, BaseModel):
             "address": self.address,
             "customer_id": self.customer_id,
             "status": self.status,
-            "products": []
+            "items": []
         }
-        for product in self.products:
-            order["products"].append(product.serialize())
+        for product in self.items:
+            order["items"].append(product.serialize())
         return order
      
     def deserialize(self, data: dict):
@@ -180,17 +183,17 @@ class Order(db.Model, BaseModel):
         """
         try:
             # assert(isinstance(data["total"],float), "total")
-            self.id = data["id"]
-            self.date = data["date"].isoformat()
             self.total = data["total"]
-            self.payment = getattr(PaymentMethods, data["payment"])
+            self.date = data["date"]
+            self.payment = data.get("payment")
+            self.address = data["address"]
             self.customer_id = data["customer_id"]
-            self.status = getattr(ShipmentStatus, data["status"])
-            products = data["products"]
-            for json_product in products:
+            self.status = data.get("status")
+            items = data["items"]
+            for json_product in items:
                 product = Item()
                 product.deserialize(json_product)
-                self.products.append(product)
+                self.items.append(product)
         # except AssertionError as error:
         #     raise DataValidationError("Invalid type for boolean [available]: " + str(type(data["available"])))
         except AttributeError as error:

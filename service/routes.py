@@ -1,3 +1,4 @@
+
 """
 My Service
 
@@ -28,7 +29,9 @@ def index():
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 
-# Place your REST API code here ...
+# ---------------------------------------------------------------------
+#               O R D E R  M E T H O D S
+# ---------------------------------------------------------------------
 
 ######################################################################
 #  CREATE AN ORDER
@@ -44,7 +47,7 @@ def create_orders():
     app.logger.info("New order %s is created!", order.id)
 
     res = order.serialize()
-    location_url = url_for("read_orders", order_id = order.id, _external = True)
+    location_url = url_for("get_orders", order_id = order.id, _external = True)
     return jsonify(res), status.HTTP_201_CREATED,{"Location": location_url}
 
 ######################################################################
@@ -68,6 +71,17 @@ def update_order(order_id):
     return jsonify(res), status.HTTP_200_OK
 
 ######################################################################
+#  LIST ALL ORDERS
+######################################################################
+@app.route("/orders", methods=["GET"])
+def list_orders():
+    app.logger.info("Request to list all orders")
+    orders = Order.all()
+    res = [order.serialize() for order in orders]
+    app.logger.info("[%s] orders returned", len(res))
+    return make_response(jsonify(res), status.HTTP_200_OK)
+
+######################################################################
 #  DELETE AN ORDER
 ######################################################################
 @app.route("/orders/<int:order_id>", methods=["DELETE"])
@@ -79,12 +93,64 @@ def delete_orders(order_id):
     return make_response("", status.HTTP_204_NO_CONTENT)
 
 
+######################################################################
+# READ AN ORDER
+######################################################################
+@app.route("/orders/<int:order_id>", methods=["GET"])
+def get_orders(order_id):
+    """
+    Retrieve a single Order
+    This endpoint will return an Order based on its id
+    """
+    app.logger.info("Request for Order with id: %s", order_id)
+
+    # See if the order exists and abort if it doesn't
+    order = Order.find(order_id)
+    if not order:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Order with id '{order_id}' could not be found.",
+        )
+    app.logger.info("Returning order: %s", order.id)
+    return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
+
 # ---------------------------------------------------------------------
 #                I T E M S   M E T H O D S
 # ---------------------------------------------------------------------
+######################################################################
+# ADD AN ITEM
+######################################################################
+
+@app.route("/orders/<int:order_id>/items", methods=["POST"])
+def create_items(order_id):
+    """
+    Create an Item on an Order
+    This endpoint will add an item to an order
+    """
+    app.logger.info("Request to create an Item for Order with id: %s", order_id)
+    # See if the order exists and abort if it doesn't
+    order = Order.find(order_id)
+    if not order:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Order with id '{order_id}' could not be found.",
+        )
+
+    # Create an item from the json data
+    item = Item()
+    item.deserialize(request.get_json())
+
+    # Append the item to the order
+    order.items.append(item)
+    order.update()
+
+    # Prepare a message to return
+    message = item.serialize()
+
+    return make_response(jsonify(message), status.HTTP_201_CREATED)
 
 ######################################################################
-# LIST AN ITEM
+# LIST ALL ITEMS
 ######################################################################
 
 @app.route("/orders/<int:order_id>/items", methods=["GET"])
@@ -117,6 +183,22 @@ def update_items(order_id, item_id):
 
     res = item.serialize()
     return jsonify(res), status.HTTP_200_OK
+
+######################################################################
+# RETRIEVE AN ITEM FROM AN ORDER
+######################################################################
+@app.route("/orders/<int:order_id>/items/<int:item_id>", methods = ["GET"])
+def get_items(order_id, item_id):
+    """
+    this endpoint returns an item in the order
+    """
+    app.logger.info("Request to retrieve an Item with id %s for Order %s", item_id, order_id)
+    item = Item.find(item_id)
+    if not item:
+        abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
+
+    app.logger.info("Returning item: %s", item.id)
+    return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
 
 ######################################################################
 # DELETE AN ITEM
