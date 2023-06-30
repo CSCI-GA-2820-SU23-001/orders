@@ -169,7 +169,7 @@ def list_items(order_id):
 # UPDATE AN ITEM
 ######################################################################
 
-@app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["DELETE"])
+@app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["PUT"])
 def update_items(order_id, item_id):
     app.logger.info("Request to update Item %s for Order id: %s", item_id, order_id)
 
