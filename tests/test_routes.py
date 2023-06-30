@@ -74,7 +74,7 @@ class TestOrderServer(TestCase):
             status_value = next(status_cycle)
             # Pass the status value to the factory
             order = OrderFactory(status=status_value)
-            resp = self.client.post("/orders", json=order.serialize())
+            resp = self.client.post(f"{BASE_URL}", json=order.serialize())
             self.assertEqual(
                 resp.status_code,
                 status.HTTP_201_CREATED,
@@ -106,7 +106,7 @@ class TestOrderServer(TestCase):
         """ It should create an order """
         order = OrderFactory()
         res = self.client.post(
-            "/orders",
+            f"{BASE_URL}",
             json = order.serialize(), 
             content_type = "application/json"
         )
@@ -132,7 +132,7 @@ class TestOrderServer(TestCase):
         It should fail if the call has some missing information.
         """
         res = self.client.post(
-            "/orders",
+            f"{BASE_URL}",
             json={
                 "items": []
             },
@@ -150,7 +150,7 @@ class TestOrderServer(TestCase):
     def test_list_orders(self):
         """ It should list all orders """
         self._create_orders(4)
-        resp = self.client.get("/orders")
+        resp = self.client.get(f"{BASE_URL}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 4)
@@ -175,7 +175,7 @@ class TestOrderServer(TestCase):
         """It should update an Order"""
         order = self._create_orders(1)[0]
         res = self.client.post(
-            f"/orders",
+            f"{BASE_URL}",
             json=order.serialize(),
             content_type="application/json",
         )
@@ -189,7 +189,7 @@ class TestOrderServer(TestCase):
         new_total = 100.00
         order.total = new_total
         res = self.client.put(
-            f"/orders/{order_id}",
+            f"{BASE_URL}/{order_id}",
             json=order.serialize(),
             content_type="application/json",
         )
@@ -204,7 +204,7 @@ class TestOrderServer(TestCase):
         """It should Delete an Order"""
         order = self._create_orders(1)[0]
         res = self.client.post(
-            f"/orders",
+            f"{BASE_URL}",
             json=order.serialize(),
             content_type="application/json",
         )
@@ -214,7 +214,7 @@ class TestOrderServer(TestCase):
         logging.debug(data)
         order_id = data["id"]
 
-        resp = self.client.delete(f"/orders/{order_id}")
+        resp = self.client.delete(f"{BASE_URL}/{order_id}")
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
     # ---------------------------------------------------------------------
@@ -229,7 +229,7 @@ class TestOrderServer(TestCase):
         order = self._create_orders(1)[0]
         item = ItemFactory()
         res = self.client.post(
-            f"/orders/{order.id}/items",
+            f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
             content_type="application/json",
         )
@@ -250,7 +250,7 @@ class TestOrderServer(TestCase):
         order = self._create_orders(1)[0]
         item = ItemFactory()
         res = self.client.post(
-            f"/orders/{order.id}/items",
+            f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
             content_type="application/json",
         )
@@ -261,7 +261,7 @@ class TestOrderServer(TestCase):
         item_id = data["id"]
 
         res = self.client.get(
-            f"/orders/{order.id}/items/{item_id}",
+            f"{BASE_URL}/{order.id}/items/{item_id}",
             content_type="application/json",
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -316,7 +316,7 @@ class TestOrderServer(TestCase):
 
         # Add the item to the order
         res = self.client.post(
-            f"/orders/{order.id}/items",
+            f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
             content_type="application/json",
         )
@@ -331,7 +331,7 @@ class TestOrderServer(TestCase):
 
         # Update the item within the order
         res = self.client.put(
-            f"/orders/{order.id}/items/{item_id}",
+            f"{BASE_URL}/{order.id}/items/{item_id}",
             json=item.serialize(),
             content_type="application/json",
         )
@@ -353,7 +353,7 @@ class TestOrderServer(TestCase):
         order = self._create_orders(1)[0]
         item = ItemFactory()
         resp = self.client.post(
-            f"/orders/{order.id}/items",
+            f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
             content_type="application/json",
         )
@@ -364,14 +364,14 @@ class TestOrderServer(TestCase):
 
         # send delete request
         resp = self.client.delete(
-            f"/orders/{order.id}/items/{item_id}",
+            f"{BASE_URL}/{order.id}/items/{item_id}",
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
         # retrieve it back and make sure address is not there
         resp = self.client.get(
-            f"/orders/{order.id}/items/{item_id}",
+            f"{BASE_URL}/{order.id}/items/{item_id}",
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
