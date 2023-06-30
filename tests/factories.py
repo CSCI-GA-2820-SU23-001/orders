@@ -38,5 +38,5 @@ class ItemFactory(factory.Factory):
     product_id = factory.Faker('random_int', min=1, max=100000)
     quantity = factory.Faker('random_int', min=1, max=10)
     total = round(random.uniform(1.00, 100.00), 2)
-    order_id = None
+    order_id = factory.LazyAttribute(lambda obj: obj.order.id) 
     order = factory.SubFactory(OrderFactory)
