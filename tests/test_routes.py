@@ -95,7 +95,6 @@ class TestOrderServer(TestCase):
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-
     # ---------------------------------------------------------------------
     #               O R D E R  M E T H O D S
     # ---------------------------------------------------------------------
@@ -155,8 +154,6 @@ class TestOrderServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 4)
-
-
     
     def test_get_order(self):
         """It should Read a single Order"""
@@ -174,15 +171,33 @@ class TestOrderServer(TestCase):
         response = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-
     def test_update_orders(self):
         order = self._create_orders(1)[0]
+        res = self.client.post(
+            f"/orders",
+            json=order.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        data = res.get_json()
+        logging.debug(data)
+        order_id = data["id"]
+
+        # Modify the order with the desired changes
+        new_total = 100.00
+        order.total = new_total
         res = self.client.put(
-            f"/orders/{order.id}",
+            f"/orders/{order_id}",
             json=order.serialize(),
             content_type="application/json",
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+            
+        # Get the updated order from the response
+        updated_order = res.get_json()
+        # Assert that the total of the updated order matches the new total
+        self.assertEqual(updated_order["total"], new_total)
 
     def test_delete_orders(self):
         """It should Delete an Order"""
@@ -200,7 +215,6 @@ class TestOrderServer(TestCase):
 
         resp = self.client.delete(f"orders/{order_id}")
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
-    
 
     # ---------------------------------------------------------------------
     #               I T E M  M E T H O D S
@@ -256,6 +270,9 @@ class TestOrderServer(TestCase):
         self.assertEqual(data["order_id"], order.id)
         self.assertEqual(data["quantity"], item.quantity)
 
+    ######################################################################
+    #  TEST GET ITEMS
+    ######################################################################
 
     def test_get_item(self):
         """It should Read an item from an order"""
@@ -284,7 +301,46 @@ class TestOrderServer(TestCase):
         self.assertEqual(data["order_id"], test_order.id)
         self.assertEqual(data["id"], item.id)
 
-    
+    ######################################################################
+    #  TEST UPDATE ITEMS
+    ######################################################################
+
+    def test_update_items(self):
+        """It should update an item within an order"""
+        # Create an order
+        order = self._create_orders(1)[0]
+
+        # Create an item
+        item = ItemFactory()
+
+        # Add the item to the order
+        res = self.client.post(
+            f"orders/{order.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        data = res.get_json()
+        item_id = data["id"]
+
+        # Modify the item with the desired changes
+        new_quantity = 2
+        item.quantity = new_quantity
+
+        # Update the item within the order
+        res = self.client.put(
+            f"orders/{order.id}/items/{item_id}",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # Get the updated item from the response
+        updated_item = res.get_json()
+
+        # Assert that the quantity of the updated item matches the new quantity
+        self.assertEqual(updated_item["quantity"], new_quantity)
+
     ######################################################################
     #  TEST DELETE ITEMS
     ######################################################################
