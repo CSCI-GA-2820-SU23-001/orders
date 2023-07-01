@@ -21,6 +21,8 @@ DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
 BASE_URL = "/orders"
+NONEXIST_ORDER_ID = "1234"
+NONEXIST_ITEM_ID = "1234"
 
 ######################################################################
 #  T E S T   C A S E S
@@ -216,7 +218,10 @@ class TestOrderServer(TestCase):
 
         resp = self.client.delete(f"{BASE_URL}/{order_id}")
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
-
+    def test_delete_nonexist_orders(self):
+        """It Should Delete an non-existing order"""
+        resp = self.client.delete(f"{BASE_URL}/{NONEXIST_ORDER_ID}")
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
     # ---------------------------------------------------------------------
     #               I T E M  M E T H O D S
     # ---------------------------------------------------------------------
@@ -351,27 +356,46 @@ class TestOrderServer(TestCase):
         """It should Delete an Item"""
         # get the id of an account
         order = self._create_orders(1)[0]
-        item = ItemFactory()
-        resp = self.client.post(
+        
+        item = ItemFactory(order_id=order.id)
+        res = self.client.post(
             f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
             content_type="application/json",
         )
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        data = resp.get_json()
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        data = res.get_json()
         logging.debug(data)
         item_id = data["id"]
 
         # send delete request
-        resp = self.client.delete(
+        res = self.client.delete(
             f"{BASE_URL}/{order.id}/items/{item_id}",
             content_type="application/json",
         )
-        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
         # retrieve it back and make sure address is not there
-        resp = self.client.get(
+        res = self.client.get(
             f"{BASE_URL}/{order.id}/items/{item_id}",
             content_type="application/json",
         )
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_delete_nonexist_items(self):
+        """It should Delete a non-existing item"""
+        order = self._create_orders(1)[0]
+
+        # retrieve it back and make sure item is not there
+        res = self.client.get(
+            f"{BASE_URL}/{order.id}/items/{NONEXIST_ITEM_ID}",
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+         # send delete request
+        res = self.client.delete(
+            f"{BASE_URL}/{order.id}/items/{NONEXIST_ITEM_ID}",
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
