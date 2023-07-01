@@ -1,4 +1,3 @@
-
 """
 My Service
 
@@ -55,7 +54,7 @@ def create_orders():
 ######################################################################
 
 @app.route('/orders/<int:order_id>', methods=['PUT'])
-def update_order(order_id):
+def update_orders(order_id):
     app.logger.info("Request to list all orders")
 
     order = Order.find(order_id)
@@ -187,6 +186,22 @@ def list_items(order_id):
     return make_response(jsonify(res), status.HTTP_200_OK)
 
 ######################################################################
+# RETRIEVE AN ITEM FROM AN ORDER
+######################################################################
+@app.route("/orders/<int:order_id>/items/<int:item_id>", methods = ["GET"])
+def get_items(order_id, item_id):
+    """
+    this endpoint returns an item in the order
+    """
+    app.logger.info("Request to retrieve an Item with id %s for Order %s", item_id, order_id)
+    item = Item.find(item_id)
+    if not item:
+        abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
+
+    app.logger.info("Returning item: %s", item.id)
+    return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
+
+######################################################################
 # UPDATE AN ITEM
 ######################################################################
 
@@ -204,22 +219,6 @@ def update_items(order_id, item_id):
 
     res = item.serialize()
     return jsonify(res), status.HTTP_200_OK
-
-######################################################################
-# RETRIEVE AN ITEM FROM AN ORDER
-######################################################################
-@app.route("/orders/<int:order_id>/items/<int:item_id>", methods = ["GET"])
-def get_items(order_id, item_id):
-    """
-    this endpoint returns an item in the order
-    """
-    app.logger.info("Request to retrieve an Item with id %s for Order %s", item_id, order_id)
-    item = Item.find(item_id)
-    if not item:
-        abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
-
-    app.logger.info("Returning item: %s", item.id)
-    return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
 
 ######################################################################
 # DELETE AN ITEM
