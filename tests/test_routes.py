@@ -106,7 +106,7 @@ class TestOrderServer(TestCase):
     ######################################################################
     def test_create_orders(self):
         """ It should create an order """
-        order = OrderFactory()
+        order = OrderFactory(status="OPEN")  # Create an order with 'in progress' status
         res = self.client.post(
             f"{BASE_URL}",
             json = order.serialize(), 
@@ -144,7 +144,7 @@ class TestOrderServer(TestCase):
 
         orders = Order.all()
         self.assertEqual(len(orders), 0)
-    
+
     ######################################################################
     #  TEST DELETE ORDER
     ######################################################################
