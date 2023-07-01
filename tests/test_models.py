@@ -126,6 +126,21 @@ class TestOrder(unittest.TestCase):
         order.delete()
         orders = Order.all()
         self.assertEqual(len(orders), 0)    
+
+    def test_cancel_order(self):
+        """It should change the status of an order to CANCELLED"""
+        orders = Order.all()
+        self.assertEqual(orders, [])
+        order = OrderFactory()
+        order.create()
+        self.assertIsNotNone(order.id)
+        orders = Order.all()
+        self.assertEqual(len(orders), 1)
+        order = orders[0]
+        order.status = "CANCELLED"
+        order.update()
+        orders = Order.all()
+        self.assertEqual(order.status, "CANCELLED")
     
     ######################################################################
     #  TEST SERIALIZE / DESERIALIZE ORDER
