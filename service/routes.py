@@ -70,6 +70,27 @@ def update_orders(order_id):
     return jsonify(res), status.HTTP_200_OK
 
 ######################################################################
+#  CANCEL AN ORDER
+######################################################################
+@app.route("/orders/<int:order_id>/cancel", methods=["PUT"])
+def cancel_order(order_id):
+    app.logger.info("Request to cancel an order with id: %s", order_id)
+    order = Order.find(order_id)
+    if not order:
+        abort(status.HTTP_404_NOT_FOUND,
+              f"Order with id '{order_id}' does not exist.")
+    if not order.status == "OPEN":
+        abort(
+            status.HTTP_409_CONFLICT,
+            f"Order with id '{order_id}' is already shipped and cannot be cancelled.",
+        )
+    app.logger.info("Order with iD %s is cancelled", order_id)
+    order.status = "CANCELLED"
+    order.update()
+    return order.serialize(), status.HTTP_200_OK
+
+
+######################################################################
 #  LIST ALL ORDERS
 ######################################################################
 @app.route("/orders", methods=["GET"])

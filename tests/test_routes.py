@@ -222,6 +222,28 @@ class TestOrderServer(TestCase):
         """It Should Delete an non-existing order"""
         resp = self.client.delete(f"{BASE_URL}/{NONEXIST_ORDER_ID}")
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_cancel_order(self):
+        """It should cancel an order"""
+        orders = self._create_orders(3)
+        open_orders = [order for order in orders if order.status == "OPEN"]
+        order = open_orders[0]
+        resp = self.client.put(f"{BASE_URL}/{order.id}/cancel")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        resp = self.client.get(f"{BASE_URL}/{order.id}")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        logging.debug("Response data: %s", data)
+        self.assertEqual(data["status"], "CANCELLED")
+    
+    def test_cancel_order_not_open(self):
+        """It should not cancel an order that isn't in open status"""
+        orders = self._create_orders(10)
+        open_orders = [order for order in orders if order.status == "SHIPPING"]
+        order = open_orders[0]
+        resp = self.client.put(f"{BASE_URL}/{order.id}/cancel")
+        self.assertEqual(resp.status_code, 409)
+
     # ---------------------------------------------------------------------
     #               I T E M  M E T H O D S
     # ---------------------------------------------------------------------
@@ -399,6 +421,10 @@ class TestOrderServer(TestCase):
             content_type="application/json",
         )
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+    ######################################################################
+    #  TEST BAD REQUEST
+    ######################################################################
 
     def test_bad_request(self):
         """It should not Create when sending the wrong data"""
