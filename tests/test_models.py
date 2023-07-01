@@ -113,6 +113,34 @@ class TestOrder(unittest.TestCase):
         orders = Order.all()
         self.assertEqual(len(orders), 3)
 
+    def test_update_an_order(self):
+        """ It should update an Order """
+        orders = Order.all()
+        self.assertEqual(orders, [])
+
+        order = OrderFactory()
+        order.create()
+        self.assertIsNotNone(order.id)
+
+        fake_order = OrderFactory()
+        order.date = fake_order.date
+        order.total = fake_order.total
+        order.payment = fake_order.payment
+        order.address = fake_order.address
+        order.customer_id = fake_order.customer_id
+        order.status = fake_order.status
+        order.update()
+
+        updated_order = Order.find(order.id)
+
+        self.assertEqual(updated_order.id, order.id)
+        self.assertEqual(updated_order.date, fake_order.date)
+        self.assertEqual(updated_order.total, fake_order.total)
+        self.assertEqual(updated_order.payment, fake_order.payment)
+        self.assertEqual(updated_order.address, fake_order.address)
+        self.assertEqual(updated_order.customer_id, fake_order.customer_id)
+        self.assertEqual(updated_order.status, fake_order.status)
+
     def test_delete_an_order(self):
         """It should Delete an order from the database"""
         orders = Order.all()
@@ -223,8 +251,6 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(new_order.items[1].product_id, item2.product_id)
         self.assertEqual(new_order.items[1].quantity, item2.quantity)
         self.assertEqual(new_order.items[1].total, item2.total)
-    
-
 
     def test_list_all_items(self):
         """It should list all items for an order"""
@@ -238,6 +264,27 @@ class TestOrder(unittest.TestCase):
         order.create()
         items = Item.all()
         self.assertEqual(len([item for item in items]), 3)
+
+    def test_update_order_item(self):
+        """It should update an order item"""
+        order = OrderFactory()
+        item = ItemFactory(order=order)
+        order.items.append(item)
+        order.create()
+
+        # modify properties of the item
+        new_item = ItemFactory(order=order)
+        item.quantity = new_item.quantity
+        item.total = new_item.total
+        item.product_id = new_item.product_id
+        item.update()
+
+        updated_order = Order.find(order.id)
+        updated_item = updated_order.items[0]
+
+        self.assertEqual(updated_item.product_id, item.product_id)
+        self.assertEqual(updated_item.quantity, new_item.quantity)
+        self.assertEqual(updated_item.total, new_item.total)
 
     def test_delete_order_item(self):
         """It should Delete an orders item"""
