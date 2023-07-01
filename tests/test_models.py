@@ -112,7 +112,20 @@ class TestOrder(unittest.TestCase):
             order.create()
         orders = Order.all()
         self.assertEqual(len(orders), 3)
-        
+
+    def test_delete_an_order(self):
+        """It should Delete an order from the database"""
+        orders = Order.all()
+        self.assertEqual(orders, [])
+        order = OrderFactory()
+        order.create()
+        self.assertIsNotNone(order.id)
+        orders = Order.all()
+        self.assertEqual(len(orders), 1)
+        order = orders[0]
+        order.delete()
+        orders = Order.all()
+        self.assertEqual(len(orders), 0)    
     
     ######################################################################
     #  TEST SERIALIZE / DESERIALIZE ORDER
@@ -226,4 +239,22 @@ class TestOrder(unittest.TestCase):
         items = Item.all()
         self.assertEqual(len([item for item in items]), 3)
 
+    def test_delete_order_item(self):
+        """It should Delete an orders item"""
+        orders = Order.all()
+        self.assertEqual(orders, [])
+        order = OrderFactory()
+        item = ItemFactory(order=order)
+        order.create()
+
+        self.assertIsNotNone(order.id)
+        orders = Order.all()
+        self.assertEqual(len(orders), 1)
         
+        order = Order.find(order.id)
+        item = order.items[0]
+        item.delete()
+        order.update()
+
+        order = Order.find(order.id)
+        self.assertEqual(len(order.items), 0)
