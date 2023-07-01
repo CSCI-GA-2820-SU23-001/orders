@@ -51,6 +51,7 @@ service/                   - service python package
 
 tests/              - test cases package
 ├── __init__.py     - package initializer
+├── factories.py    - generate test data
 ├── test_models.py  - test suite for business models
 └── test_routes.py  - test suite for service routes
 ```
@@ -59,10 +60,11 @@ tests/              - test cases package
 ```text
 Endpoint          Method       Rule
 ----------------  -------      -----------------------------------------------------
+create_orders     POST         /orders
 list_orders       GET          /orders        
 get_orders        GET          /orders/<order_id>
 delete_orders     DELETE       /orders/<order_id>
- 
+create_items      POST         /orders/<int:order_id>/items
 list_items        GET          /orders/<int:order_id>/items    
 get_items         GET          /orders/<order_id>/items/<item_id>
 delete_items      DELETE       /orders/<order_id>/items/<item_id>
