@@ -87,15 +87,6 @@ class TestOrderServer(TestCase):
             orders.append(order)
 
         return orders
-    
-    ######################################################################
-    # #  P L A C E   T E S T   C A S E S   H E R E
-    ######################################################################
-
-    def test_index(self):
-        """ It should call the home page """
-        resp = self.client.get("/")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     # ---------------------------------------------------------------------
     #               O R D E R  M E T H O D S
@@ -474,7 +465,7 @@ class TestOrderServer(TestCase):
             BASE_URL, json=order.serialize(), content_type="test/html"
         )
         self.assertEqual(resp.status_code,
-                         415)
+                         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     def test_index(self):
         """It should call the Home Page"""
@@ -484,6 +475,6 @@ class TestOrderServer(TestCase):
     def test_method_not_allowed(self):
         """It should not allow an illegal method call"""
         resp = self.client.put(BASE_URL, json={"not": "today"})
-        self.assertEqual(resp.status_code, 405)
+        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 

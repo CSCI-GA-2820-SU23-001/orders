@@ -142,7 +142,7 @@ def get_orders(order_id):
 ######################################################################
 
 @app.route("/orders/<int:order_id>/items", methods=["POST"])
-def create_items(order_id):
+def add_items(order_id):
     """
     Create an Item on an Order
     This endpoint will add an item to an order
