@@ -235,6 +235,11 @@ class TestOrderServer(TestCase):
         data = resp.get_json()
         logging.debug("Response data: %s", data)
         self.assertEqual(data["status"], "CANCELLED")
+
+    def test_cancel_nonexist_order(self):
+        """It should cancel an non-existing order"""
+        resp= self.client.put(f"{BASE_URL}/{NONEXIST_ORDER_ID}/cancel")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
     
     def test_cancel_order_not_open(self):
         """It should not cancel an order that isn't in open status"""
@@ -268,35 +273,27 @@ class TestOrderServer(TestCase):
         self.assertEqual(data["total"], item.total)
         self.assertEqual(data["order_id"], order.id)
 
+    def test_add_item_nonexist_order(self):
+        """It should Add an item to an non-existing order"""
+        resp= self.client.post(f"{BASE_URL}/{NONEXIST_ORDER_ID}/items")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
     ######################################################################
     #  TEST LIST ITEMS
     ######################################################################
 
     def test_list_items(self):
         """ It should list all items for an order """
-        order = self._create_orders(1)[0]
-        item = ItemFactory()
-        res = self.client.post(
-            f"{BASE_URL}/{order.id}/items",
-            json=item.serialize(),
-            content_type="application/json",
+        test_order = self._create_orders(1)[0]
+        response = self.client.get(
+            f"{BASE_URL}/{test_order.id}/items"
         )
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        data = res.get_json()
-        logging.debug(data)
-        item_id = data["id"]
-
-        res = self.client.get(
-            f"{BASE_URL}/{order.id}/items/{item_id}",
-            content_type="application/json",
-        )
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-        data = res.get_json()
-        logging.debug(data)
-        self.assertEqual(data["order_id"], order.id)
-        self.assertEqual(data["quantity"], item.quantity)
+    def test_list_items_nonexist_order(self):
+        """It should list all items for an non-existing order"""
+        resp= self.client.get(f"{BASE_URL}/{NONEXIST_ORDER_ID}/items")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     ######################################################################
     #  TEST GET ITEMS
