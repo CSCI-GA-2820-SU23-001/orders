@@ -146,7 +146,7 @@ class TestOrderServer(TestCase):
         self.assertEqual(len(orders), 0)
 
     ######################################################################
-    #  TEST DELETE ORDER
+    #  TEST LIST ORDER
     ######################################################################
 
     def test_list_orders(self):
@@ -156,6 +156,10 @@ class TestOrderServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 4)
+
+    ######################################################################
+    #  TEST GET ORDER
+    ######################################################################
     
     def test_get_order(self):
         """It should Read a single Order"""
@@ -172,6 +176,10 @@ class TestOrderServer(TestCase):
         """It should not Read an Order that is not found"""
         response = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    ######################################################################
+    #  TEST UPDATE ORDER
+    ######################################################################
 
     def test_update_orders(self):
         """It should update an Order"""
@@ -202,6 +210,15 @@ class TestOrderServer(TestCase):
         # Assert that the total of the updated order matches the new total
         self.assertEqual(updated_order["total"], new_total)
 
+    def test_update_nonexist_orders(self):
+        """It Should Delete an non-existing order"""
+        resp = self.client.put(f"{BASE_URL}/{NONEXIST_ORDER_ID}")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    ######################################################################
+    #  TEST DELETE ORDER
+    ######################################################################
+
     def test_delete_orders(self):
         """It should Delete an Order"""
         order = self._create_orders(1)[0]
@@ -218,10 +235,15 @@ class TestOrderServer(TestCase):
 
         resp = self.client.delete(f"{BASE_URL}/{order_id}")
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
     def test_delete_nonexist_orders(self):
         """It Should Delete an non-existing order"""
         resp = self.client.delete(f"{BASE_URL}/{NONEXIST_ORDER_ID}")
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+    ######################################################################
+    #  TEST CANCEL ORDER
+    ######################################################################
 
     def test_cancel_order(self):
         """It should cancel an order"""
