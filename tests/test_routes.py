@@ -211,7 +211,7 @@ class TestOrderServer(TestCase):
         self.assertEqual(updated_order["total"], new_total)
 
     def test_update_nonexist_orders(self):
-        """It Should Delete an non-existing order"""
+        """It Should update an non-existing order"""
         resp = self.client.put(f"{BASE_URL}/{NONEXIST_ORDER_ID}")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -389,7 +389,7 @@ class TestOrderServer(TestCase):
         self.assertEqual(updated_item["quantity"], new_quantity)
 
     def test_update_nonexist_items(self):
-        """It should Delete a non-existing item"""
+        """It should update a non-existing item"""
         order = self._create_orders(1)[0]
 
         # retrieve it back and make sure item is not there
