@@ -65,8 +65,8 @@ list_orders       GET          /orders
 get_orders        GET          /orders/<order_id>
 update_orders     PUT          /orders/<order_id>
 delete_orders     DELETE       /orders/<order_id>
-create_items      POST         /orders/<int:order_id>/items
-list_items        GET          /orders/<int:order_id>/items    
+add_items         POST         /orders/<order_id>/items
+list_items        GET          /orders/<order_id>/items    
 get_items         GET          /orders/<order_id>/items/<item_id>
 update_items      PUT          /orders/<order_id>/items/<item_id>
 delete_items      DELETE       /orders/<order_id>/items/<item_id>

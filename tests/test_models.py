@@ -78,7 +78,6 @@ class TestOrder(unittest.TestCase):
     def test_add_an_order(self):
         """ It should Create an order and add it to the database"""
 
-        """It should Create an order and add it to the database"""
         orders = Order.all()
         self.assertEqual(orders, [])
         order = OrderFactory()
