@@ -369,7 +369,6 @@ class TestOrderServer(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         data = res.get_json()
         item_id = data["id"]
-        # order_id = data["order_id"]
 
         # Modify the item with the desired changes
         new_quantity = 2
@@ -388,6 +387,24 @@ class TestOrderServer(TestCase):
 
         # Assert that the quantity of the updated item matches the new quantity
         self.assertEqual(updated_item["quantity"], new_quantity)
+
+    def test_update_nonexist_items(self):
+        """It should Delete a non-existing item"""
+        order = self._create_orders(1)[0]
+
+        # retrieve it back and make sure item is not there
+        res = self.client.get(
+            f"{BASE_URL}/{order.id}/items/{NONEXIST_ITEM_ID}",
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+         # send update request
+        res = self.client.put(
+            f"{BASE_URL}/{order.id}/items/{NONEXIST_ITEM_ID}",
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
     ######################################################################
     #  TEST DELETE ITEMS
