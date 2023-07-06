@@ -116,13 +116,12 @@ class Item(db.Model, BaseModel):
             data (dict): A dictionary containing the Item data
         """
         try:
-            self.id = data["id"]
             self.product_id = data["product_id"]
             self.quantity = data["quantity"]
             if self.quantity <= 0:
                 raise DataValidationError("Invalid quantity detected in order product: " + str(data["quantity"]))
             self.total = data["total"]
-            self.order_id = data["order_id"]
+            # self.order_id = data["order_id"]  #BUG
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
