@@ -19,20 +19,7 @@ from . import app
 def index():
     """ Root URL response """
     return (
-        """\n
-        create_orders     POST         /orders,\n
-        list_orders       GET          /orders,\n
-        get_orders        GET          /orders/<order_id>,\n
-        update_orders     PUT          /orders/<order_id>,\n
-        cancel_order      PUT          /orders/<order_id>/cancel,\n
-        delete_orders     DELETE       /orders/<order_id>,\n
-        add_items         POST         /orders/<order_id>/items,\n
-        list_items        GET          /orders/<order_id>/items,\n
-        get_items         GET          /orders/<order_id>/items/<item_id>,\n
-        update_items      PUT          /orders/<order_id>/items/<item_id>,\n
-        delete_items      DELETE       /orders/<order_id>/items/<item_id>
-        """
-        ,
+        "Reminder: return some useful information in json format about the service here",
         status.HTTP_200_OK,
     )
 
@@ -58,9 +45,9 @@ def create_orders():
     order.create()
     app.logger.info("New order %s is created!", order.id)
 
-    res = order.serialize()
+    resp = order.serialize()
     location_url = url_for("get_orders", order_id = order.id, _external = True)
-    return jsonify(res), status.HTTP_201_CREATED,{"Location": location_url}
+    return jsonify(resp), status.HTTP_201_CREATED,{"Location": location_url}
 
 ######################################################################
 #  UPDATE AN ORDER
@@ -79,8 +66,8 @@ def update_orders(order_id):
     order.deserialize(data)
     order.update()
 
-    res = order.serialize()
-    return jsonify(res), status.HTTP_200_OK
+    resp = order.serialize()
+    return jsonify(resp), status.HTTP_200_OK
 
 ######################################################################
 #  CANCEL AN ORDER
@@ -110,9 +97,9 @@ def cancel_order(order_id):
 def list_orders():
     app.logger.info("Request to list all orders")
     orders = Order.all()
-    res = [order.serialize() for order in orders]
-    app.logger.info("[%s] orders returned", len(res))
-    return make_response(jsonify(res), status.HTTP_200_OK)
+    resp = [order.serialize() for order in orders]
+    app.logger.info("[%s] orders returned", len(resp))
+    return make_response(jsonify(resp), status.HTTP_200_OK)
 
 ######################################################################
 #  DELETE AN ORDER
@@ -172,7 +159,6 @@ def add_items(order_id):
     # Create an item from the json data
     item = Item()
     item.deserialize(request.get_json())
-    item.order_id = order_id
 
     # Append the item to the order
     order.items.append(item)
@@ -196,8 +182,8 @@ def list_items(order_id):
             status.HTTP_404_NOT_FOUND,
             f"Order with id '{order_id}' cannot be found.",
         )
-    res = [item.serialize() for item in order.items]
-    return make_response(jsonify(res), status.HTTP_200_OK)
+    resp = [item.serialize() for item in order.items]
+    return make_response(jsonify(resp), status.HTTP_200_OK)
 
 ######################################################################
 # RETRIEVE AN ITEM FROM AN ORDER
@@ -231,8 +217,8 @@ def update_items(order_id, item_id):
     item.deserialize(data)
     item.update()
 
-    res = item.serialize()
-    return jsonify(res), status.HTTP_200_OK
+    resp = item.serialize()
+    return jsonify(resp), status.HTTP_200_OK
 
 ######################################################################
 # DELETE AN ITEM
