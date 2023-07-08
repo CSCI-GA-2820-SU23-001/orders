@@ -19,6 +19,20 @@ from . import app
 def index():
     """ Root URL response """
     return (
+        """\n
+        create_orders     POST         /orders,\n
+        list_orders       GET          /orders,\n
+        get_orders        GET          /orders/<order_id>,\n
+        update_orders     PUT          /orders/<order_id>,\n
+        cancel_order      PUT          /orders/<order_id>/cancel,\n
+        delete_orders     DELETE       /orders/<order_id>,\n
+        add_items         POST         /orders/<order_id>/items,\n
+        list_items        GET          /orders/<order_id>/items,\n
+        get_items         GET          /orders/<order_id>/items/<item_id>,\n
+        update_items      PUT          /orders/<order_id>/items/<item_id>,\n
+        delete_items      DELETE       /orders/<order_id>/items/<item_id>
+        """
+        ,
         "Reminder: return some useful information in json format about the service here",
         status.HTTP_200_OK,
     )
