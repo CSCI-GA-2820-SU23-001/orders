@@ -98,21 +98,21 @@ class TestOrderServer(TestCase):
     def test_create_orders(self):
         """ It should create an order """
         order = OrderFactory(status="OPEN")  # Create an order with 'in progress' status
-        res = self.client.post(
+        resp = self.client.post(
             f"{BASE_URL}",
             json = order.serialize(), 
             content_type = "application/json"
         )
         
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         orders = Order.all()
         self.assertEqual(len(orders), 1)
         self.assertIsNotNone(orders[0].id)
 
-        location = res.headers.get("location", None)
+        location = resp.headers.get("location", None)
         self.assertIsNotNone(location)
 
-        data = res.get_json()
+        data = resp.get_json()
         # self.assertEqual(data["date"], order.date,"date does not match")
         self.assertEqual(data["total"],order.total, "total price does not match")
         self.assertEqual(data["payment"],order.payment, "payment does not match")
@@ -124,14 +124,14 @@ class TestOrderServer(TestCase):
         """
         It should fail if the call has some missing information.
         """
-        res = self.client.post(
+        resp = self.client.post(
             f"{BASE_URL}",
             json={
                 "items": []
             },
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
         orders = Order.all()
         self.assertEqual(len(orders), 0)
@@ -175,29 +175,29 @@ class TestOrderServer(TestCase):
     def test_update_orders(self):
         """It should update an Order"""
         order = self._create_orders(1)[0]
-        res = self.client.post(
+        resp = self.client.post(
             f"{BASE_URL}",
             json=order.serialize(),
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
-        data = res.get_json()
+        data = resp.get_json()
         logging.debug(data)
         order_id = data["id"]
 
         # Modify the order with the desired changes
         new_total = 100.00
         order.total = new_total
-        res = self.client.put(
+        resp = self.client.put(
             f"{BASE_URL}/{order_id}",
             json=order.serialize(),
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
             
         # Get the updated order from the response
-        updated_order = res.get_json()
+        updated_order = resp.get_json()
         # Assert that the total of the updated order matches the new total
         self.assertEqual(updated_order["total"], new_total)
 
@@ -213,14 +213,14 @@ class TestOrderServer(TestCase):
     def test_delete_orders(self):
         """It should Delete an Order"""
         order = self._create_orders(1)[0]
-        res = self.client.post(
+        resp = self.client.post(
             f"{BASE_URL}",
             json=order.serialize(),
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
-        data = res.get_json()
+        data = resp.get_json()
         logging.debug(data)
         order_id = data["id"]
 
@@ -273,13 +273,13 @@ class TestOrderServer(TestCase):
         """It should Add an item to an order"""
         order = self._create_orders(1)[0]
         item = ItemFactory()
-        res = self.client.post(
+        resp = self.client.post(
             f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        data = res.get_json()
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        data = resp.get_json()
         logging.debug(data)
         self.assertEqual(data["product_id"], item.product_id)
         self.assertEqual(data["quantity"], item.quantity)
@@ -342,13 +342,13 @@ class TestOrderServer(TestCase):
         item = ItemFactory(order_id=order.id)
 
         # Add the item to the order
-        res = self.client.post(
+        resp = self.client.post(
             f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        data = res.get_json()
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        data = resp.get_json()
         item_id = data["id"]
 
         # Modify the item with the desired changes
@@ -356,15 +356,15 @@ class TestOrderServer(TestCase):
         item.quantity = new_quantity
 
         # Update the item within the order
-        res = self.client.put(
+        resp = self.client.put(
             f"{BASE_URL}/{order.id}/items/{item_id}",
             json=item.serialize(),
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
         # Get the updated item from the response
-        updated_item = res.get_json()
+        updated_item = resp.get_json()
 
         # Assert that the quantity of the updated item matches the new quantity
         self.assertEqual(updated_item["quantity"], new_quantity)
@@ -374,18 +374,18 @@ class TestOrderServer(TestCase):
         order = self._create_orders(1)[0]
 
         # retrieve it back and make sure item is not there
-        res = self.client.get(
+        resp = self.client.get(
             f"{BASE_URL}/{order.id}/items/{NONEXIST_ITEM_ID}",
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
          # send update request
-        res = self.client.put(
+        resp = self.client.put(
             f"{BASE_URL}/{order.id}/items/{NONEXIST_ITEM_ID}",
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     ######################################################################
     #  TEST DELETE ITEMS
@@ -397,47 +397,47 @@ class TestOrderServer(TestCase):
         order = self._create_orders(1)[0]
         
         item = ItemFactory(order_id=order.id)
-        res = self.client.post(
+        resp = self.client.post(
             f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        data = res.get_json()
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        data = resp.get_json()
         logging.debug(data)
         item_id = data["id"]
 
         # send delete request
-        res = self.client.delete(
+        resp = self.client.delete(
             f"{BASE_URL}/{order.id}/items/{item_id}",
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
         # retrieve it back and make sure address is not there
-        res = self.client.get(
+        resp = self.client.get(
             f"{BASE_URL}/{order.id}/items/{item_id}",
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
     
     def test_delete_nonexist_items(self):
         """It should Delete a non-existing item"""
         order = self._create_orders(1)[0]
 
         # retrieve it back and make sure item is not there
-        res = self.client.get(
+        resp = self.client.get(
             f"{BASE_URL}/{order.id}/items/{NONEXIST_ITEM_ID}",
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
          # send delete request
-        res = self.client.delete(
+        resp = self.client.delete(
             f"{BASE_URL}/{order.id}/items/{NONEXIST_ITEM_ID}",
             content_type="application/json",
         )
-        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
     ######################################################################
     #  TEST BAD REQUEST
