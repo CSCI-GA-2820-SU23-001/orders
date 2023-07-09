@@ -176,6 +176,15 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(same_order.id, order.id)
         self.assertEqual(same_order.customer_id, order.customer_id)
 
+    def test_find_by_customer_id_and_status(self):
+        """It should find an order by customer id and status"""
+        order = OrderFactory()
+        order.create()
+        same_order = Order.find_by_customer_id_and_status(order.customer_id, order.status)[0]
+        self.assertEqual(same_order.id, order.id)
+        self.assertEqual(same_order.customer_id, order.customer_id)
+        self.assertEqual(same_order.status, order.status)
+
     ######################################################################
     #  TEST SERIALIZE / DESERIALIZE ORDER
     ######################################################################

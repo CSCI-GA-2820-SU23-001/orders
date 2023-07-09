@@ -230,5 +230,4 @@ class Order(db.Model, BaseModel):
             A list of orders that match the provided customer id and status.
         """
         logger.info("Processing customer-id and status query for %s and %s", customer_id, status)
-        return cls.query.filter(SQLAlchemy.and_(cls.customer_id == customer_id,
-                                                cls.status == status))
+        return cls.query.filter(cls.customer_id == customer_id, cls.status == status).all()
