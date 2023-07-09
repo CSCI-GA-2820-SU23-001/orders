@@ -324,11 +324,17 @@ class TestOrderServer(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-
+        
+        data = resp.get_json()
+        item_id = data["id"]
+        resp = self.client.get(
+            f"{BASE_URL}/{order.id}/items/{item_id}"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         logging.debug(data)
         self.assertEqual(data["order_id"], order.id)
-        # self.assertEqual(data["id"], item.id) #BUG
+        self.assertEqual(data["id"], item_id)
 
     ######################################################################
     #  TEST UPDATE ITEMS
