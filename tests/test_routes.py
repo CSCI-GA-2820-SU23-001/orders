@@ -157,18 +157,18 @@ class TestOrderServer(TestCase):
     def test_get_order(self):
         """It should Read a single Order"""
         # get the id of an order
-        test_order = self._create_orders(1)[0]
-        response = self.client.get(
-            f"{BASE_URL}/{test_order.id}", content_type="application/json"
+        order = self._create_orders(1)[0]
+        resp = self.client.get(
+            f"{BASE_URL}/{order.id}", content_type="application/json"
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.get_json()
-        self.assertEqual(data["id"], test_order.id)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data["id"], order.id)
 
     def test_get_order_not_found(self):
         """It should not Read an Order that is not found"""
-        response = self.client.get(f"{BASE_URL}/0")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        resp = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     ######################################################################
     #  TEST UPDATE ORDER
@@ -198,7 +198,7 @@ class TestOrderServer(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-        # Get the updated order from the response
+        # Get the updated order from the resp
         updated_order = resp.get_json()
         # Assert that the total of the updated order matches the new total
         self.assertEqual(updated_order["total"], new_total)
@@ -248,7 +248,7 @@ class TestOrderServer(TestCase):
         resp = self.client.get(f"{BASE_URL}/{order.id}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
-        logging.debug("Response data: %s", data)
+        logging.debug("resp data: %s", data)
         self.assertEqual(data["status"], "CANCELLED")
 
     def test_cancel_nonexist_order(self):
@@ -274,7 +274,7 @@ class TestOrderServer(TestCase):
     def test_add_item(self):
         """It should Add an item to an order"""
         order = self._create_orders(1)[0]
-        item = ItemFactory()
+        item = ItemFactory(order_id=order.id)
         resp = self.client.post(
             f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
@@ -299,11 +299,11 @@ class TestOrderServer(TestCase):
 
     def test_list_items(self):
         """ It should list all items for an order """
-        test_order = self._create_orders(1)[0]
-        response = self.client.get(
-            f"{BASE_URL}/{test_order.id}/items"
+        order = self._create_orders(1)[0]
+        resp = self.client.get(
+            f"{BASE_URL}/{order.id}/items"
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     def test_list_items_nonexist_order(self):
         """It should list all items for an non-existing order"""
@@ -316,19 +316,18 @@ class TestOrderServer(TestCase):
 
     def test_get_item(self):
         """It should Read an item from an order"""
-
-        test_order = self._create_orders(1)[0]
-        item = ItemFactory()
-        response = self.client.post(
-            f"{BASE_URL}/{test_order.id}/items",
+        order = self._create_orders(1)[0]
+        item = ItemFactory(order_id=order.id)
+        resp = self.client.post(
+            f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
-        data = response.get_json()
+        data = resp.get_json()
         logging.debug(data)
-        self.assertEqual(data["order_id"], test_order.id)
+        self.assertEqual(data["order_id"], order.id)
         # self.assertEqual(data["id"], item.id) #BUG
 
     ######################################################################
@@ -337,13 +336,8 @@ class TestOrderServer(TestCase):
 
     def test_update_items(self):
         """It should update an item within an order"""
-        # Create an order
         order = self._create_orders(1)[0]
-
-        # Create an item
         item = ItemFactory(order_id=order.id)
-
-        # Add the item to the order
         resp = self.client.post(
             f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
@@ -365,11 +359,15 @@ class TestOrderServer(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-        # Get the updated item from the response
+        # Get the updated item from the resp
         updated_item = resp.get_json()
 
         # Assert that the quantity of the updated item matches the new quantity
         self.assertEqual(updated_item["quantity"], new_quantity)
+
+    ######################################################################
+    #  TEST DELETE ITEMS
+    ######################################################################
 
     def test_update_nonexist_items(self):
         """It should update a non-existing item"""
@@ -389,15 +387,9 @@ class TestOrderServer(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    ######################################################################
-    #  TEST DELETE ITEMS
-    ######################################################################
-
     def test_delete_items(self):
         """It should Delete an Item"""
-        # get the id of an account
         order = self._create_orders(1)[0]
-
         item = ItemFactory(order_id=order.id)
         resp = self.client.post(
             f"{BASE_URL}/{order.id}/items",
