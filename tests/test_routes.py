@@ -8,12 +8,13 @@ Test cases can be run with the following:
 import os
 import logging
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+# from unittest.mock import MagicMock, patch
 from service import app
-from service.models import db, Order, Item, init_db
+# from service.models import Item
+from service.models import db, Order, init_db
 from tests.factories import ItemFactory, OrderFactory
 from service.common import status  # HTTP Status Codes
-from datetime import date
+# from datetime import date
 from itertools import cycle
 
 
@@ -252,7 +253,7 @@ class TestOrderServer(TestCase):
 
     def test_cancel_nonexist_order(self):
         """It should cancel an non-existing order"""
-        resp= self.client.put(f"{BASE_URL}/{NONEXIST_ORDER_ID}/cancel")
+        resp = self.client.put(f"{BASE_URL}/{NONEXIST_ORDER_ID}/cancel")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_cancel_order_not_open(self):
