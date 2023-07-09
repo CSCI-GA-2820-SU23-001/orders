@@ -204,3 +204,9 @@ class Order(db.Model, BaseModel):
                 "Invalid order: body of request contained bad or no data " + str(error)
             ) from error
         return self
+    
+    @classmethod
+    def find_by_customer_id(cls, customer_id):
+        """Returns all Orders with the given customer id"""
+        logger.info("Processing customer id query for %s ...", customer_id)
+        return cls.query.filter(cls.customer_id == customer_id)
