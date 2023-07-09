@@ -4,10 +4,11 @@ Models for Order
 All of the models are stored in this module
 """
 import logging
-from flask_sqlalchemy import SQLAlchemy
+from datetime import date
 from abc import abstractmethod
 from enum import Enum
-from datetime import date
+from flask_sqlalchemy import SQLAlchemy
+
 
 logger = logging.getLogger("flask.app")
 
