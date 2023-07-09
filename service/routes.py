@@ -51,6 +51,10 @@ def index():
 
 @app.route("/orders", methods=["POST"])
 def create_orders():
+    """
+    Creates an Order
+    This endpoint will create an Order based the data in the body that is posted
+    """
     app.logger.info("Request to Create order...")
     order_data = request.get_json()
     order = Order()
@@ -69,6 +73,10 @@ def create_orders():
 
 @app.route('/orders/<int:order_id>', methods=['PUT'])
 def update_orders(order_id):
+    """
+    Update an Order
+    This endpoint will update an Order based the body that is posted
+    """
     app.logger.info("Request to list all orders")
 
     order = Order.find(order_id)
@@ -90,6 +98,7 @@ def update_orders(order_id):
 
 @app.route("/orders/<int:order_id>/cancel", methods=["PUT"])
 def cancel_order(order_id):
+    """Canceling an order changes its status to Cancelled"""
     app.logger.info("Request to cancel an order with id: %s", order_id)
     order = Order.find(order_id)
     if not order:
@@ -109,8 +118,10 @@ def cancel_order(order_id):
 ######################################################################
 #  LIST ALL ORDERS
 ######################################################################
+
 @app.route("/orders", methods=["GET"])
 def list_orders():
+    """Returns all of the Orders"""
     app.logger.info("Request to list all orders")
     orders = Order.all()
     resp = [order.serialize() for order in orders]
@@ -124,6 +135,10 @@ def list_orders():
 
 @app.route("/orders/<int:order_id>", methods=["DELETE"])
 def delete_orders(order_id):
+    """
+    Delete an Order
+    This endpoint will delete an order based the id specified in the path
+    """
     app.logger.info("Request to delete order with id: %s", order_id)
     account = Order.find(order_id)
     if account:
@@ -196,6 +211,7 @@ def add_items(order_id):
 
 @app.route("/orders/<int:order_id>/items", methods=["GET"])
 def list_items(order_id):
+    """Returns all of the Items for an Order"""
     app.logger.info("Request to list all Items for an order with id: %s", order_id)
     order = Order.find(order_id)
     if not order:
@@ -231,6 +247,10 @@ def get_items(order_id, item_id):
 
 @app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["PUT"])
 def update_items(order_id, item_id):
+    """
+    Update an Item
+    This endpoint will update an Item based the body that is posted
+    """
     app.logger.info("Request to update Item %s for Order id: %s", item_id, order_id)
 
     item = Item.find(item_id)
@@ -251,6 +271,10 @@ def update_items(order_id, item_id):
 
 @app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["DELETE"])
 def delete_items(order_id, item_id):
+    """
+    Delete an Order Item
+    This endpoint will delete an item based the id specified in the path
+    """
     app.logger.info("Request to delete Item %s for Order id: %s", item_id, order_id)
     address = Item.find(item_id)
     if address:
