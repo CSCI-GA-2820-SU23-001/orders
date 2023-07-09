@@ -3,8 +3,8 @@ My Service
 
 Describe what your service does here
 """
-
-from flask import Flask, jsonify, request, url_for, make_response, abort
+# from flask import Flask
+from flask import jsonify, request, url_for, make_response, abort
 from service.common import status  # HTTP Status Codes
 from service.models import Order, Item
 
@@ -59,8 +59,8 @@ def create_orders():
     app.logger.info("New order %s is created!", order.id)
 
     resp = order.serialize()
-    location_url = url_for("get_orders", order_id = order.id, _external = True)
-    return jsonify(resp), status.HTTP_201_CREATED,{"Location": location_url}
+    location_url = url_for("get_orders", order_id=order.id, _external=True)
+    return jsonify(resp), status.HTTP_201_CREATED, {"Location": location_url}
 
 
 ######################################################################
