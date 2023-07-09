@@ -6,7 +6,7 @@ Describe what your service does here
 # from flask import Flask
 from flask import jsonify, request, url_for, make_response, abort
 from service.common import status  # HTTP Status Codes
-from service.models import Order, Item
+from service.models import Order, Item, DataValidationError
 
 # Import Flask application
 from . import app
@@ -189,6 +189,11 @@ def add_items(order_id):
             status.HTTP_404_NOT_FOUND,
             f"Order with id '{order_id}' could not be found.",
         )
+    elif order.status == "CANCELLED":
+        abort(
+            status.HTTP_400_BAD_REQUEST,
+            f"Order with id '{order_id}' has been cancelled.",
+        )
 
     # Create an item from the json data
     item = Item()
@@ -257,11 +262,15 @@ def update_items(order_id, item_id):
         abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' does not exist.")
 
     data = request.get_json()
-    item.deserialize(data)
-    item.update()
+    try:
+        item.deserialize(data)
+    except DataValidationError as error:
+        abort(status.HTTP_400_BAD_REQUEST, error)
 
+    item.update()
     resp = item.serialize()
     return jsonify(resp), status.HTTP_200_OK
+
 
 
 ######################################################################

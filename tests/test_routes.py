@@ -365,10 +365,6 @@ class TestOrderServer(TestCase):
         # Assert that the quantity of the updated item matches the new quantity
         self.assertEqual(updated_item["quantity"], new_quantity)
 
-    ######################################################################
-    #  TEST DELETE ITEMS
-    ######################################################################
-
     def test_update_nonexist_items(self):
         """It should update a non-existing item"""
         order = self._create_orders(1)[0]
@@ -386,6 +382,49 @@ class TestOrderServer(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_invalid_quantity_update_items(self):
+        """It should not update an item's quantity to zero"""
+        order = self._create_orders(1)[0]
+        item = ItemFactory(order_id=order.id)
+        resp = self.client.post(
+            f"{BASE_URL}/{order.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        data = resp.get_json()
+        item_id = data["id"]
+
+        # Modify the item with the desired changes
+        new_quantity = 0
+        item.quantity = new_quantity
+
+        # Update the item within the order
+        resp = self.client.put(
+            f"{BASE_URL}/{order.id}/items/{item_id}",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_invalid_add_to_cancelled_order_items(self):
+        """It should not add an item to an cancelled order"""
+        order = self._create_orders(1)[0]
+        resp = self.client.put(f"{BASE_URL}/{order.id}/cancel")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        item = ItemFactory(order_id=order.id)
+        resp = self.client.post(
+            f"{BASE_URL}/{order.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    ######################################################################
+    #  TEST DELETE ITEMS
+    ######################################################################
 
     def test_delete_items(self):
         """It should Delete an Item"""
