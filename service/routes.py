@@ -31,7 +31,7 @@ def index():
         get_items         GET          /orders/<order_id>/items/<item_id>,\n
         update_items      PUT          /orders/<order_id>/items/<item_id>,\n
         delete_items      DELETE       /orders/<order_id>/items/<item_id>
-        """,
+        """
         "Reminder: return some useful information in json format about the service here",
         status.HTTP_200_OK,
     )
