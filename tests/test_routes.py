@@ -274,7 +274,7 @@ class TestOrderServer(TestCase):
     def test_add_item(self):
         """It should Add an item to an order"""
         order = self._create_orders(1)[0]
-        item = ItemFactory(order_id=order.id)
+        item = ItemFactory(order=order)
         resp = self.client.post(
             f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
@@ -317,7 +317,7 @@ class TestOrderServer(TestCase):
     def test_get_item(self):
         """It should Read an item from an order"""
         order = self._create_orders(1)[0]
-        item = ItemFactory(order_id=order.id)
+        item = ItemFactory(order=order)
         resp = self.client.post(
             f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
@@ -343,7 +343,7 @@ class TestOrderServer(TestCase):
     def test_update_items(self):
         """It should update an item within an order"""
         order = self._create_orders(1)[0]
-        item = ItemFactory(order_id=order.id)
+        item = ItemFactory(order=order)
         resp = self.client.post(
             f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
@@ -392,7 +392,7 @@ class TestOrderServer(TestCase):
     def test_invalid_quantity_update_items(self):
         """It should not update an item's quantity to zero"""
         order = self._create_orders(1)[0]
-        item = ItemFactory(order_id=order.id)
+        item = ItemFactory(order=order)
         resp = self.client.post(
             f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
@@ -420,7 +420,7 @@ class TestOrderServer(TestCase):
         resp = self.client.put(f"{BASE_URL}/{order.id}/cancel")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-        item = ItemFactory(order_id=order.id)
+        item = ItemFactory(order=order)
         resp = self.client.post(
             f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
@@ -435,7 +435,7 @@ class TestOrderServer(TestCase):
     def test_delete_items(self):
         """It should Delete an Item"""
         order = self._create_orders(1)[0]
-        item = ItemFactory(order_id=order.id)
+        item = ItemFactory(order=order)
         resp = self.client.post(
             f"{BASE_URL}/{order.id}/items",
             json=item.serialize(),
