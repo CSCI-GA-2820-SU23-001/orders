@@ -6,7 +6,7 @@ All of the models are stored in this module
 import logging
 from datetime import date
 from abc import abstractmethod
-from enum import Enum
+# from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -113,7 +113,6 @@ class Item(db.Model, BaseModel):
             "order_id": self.order_id,
         }
 
-
     def deserialize(self, data: dict):
         """
         Deserializes a Item from a dictionary
@@ -137,10 +136,10 @@ class Item(db.Model, BaseModel):
             ) from error
         return self
 
+
 ##################################################
 # ORDER MODEL
 ##################################################
-
 class Order(db.Model, BaseModel):
     """
     A Class that represent Order Model
@@ -149,15 +148,15 @@ class Order(db.Model, BaseModel):
     date = db.Column(db.Date(), nullable=False, default=date.today())
     total = db.Column(db.Float, nullable=False)
     payment = db.Column(
-        db.Enum("CREDITCARD","DEBITCARD", "VEMO", name="payment_enum"), 
+        db.Enum("CREDITCARD", "DEBITCARD", "VEMO", name="payment_enum"),
         nullable=False
     )
     address = db.Column(db.String(100), nullable=False)
     # should be set as ForeignKey db.ForeignKey('customer.id'), but this will give "table not found" error
     customer_id = db.Column(db.Integer, nullable=False)
     status = db.Column(
-        db.Enum("OPEN","SHIPPING","DELIVERED","CANCELLED", name="status_enum"), 
-        nullable=False, 
+        db.Enum("OPEN", "SHIPPING", "DELIVERED", "CANCELLED", name="status_enum"), 
+        nullable=False,
         server_default="OPEN"
     )
     items = db.relationship("Item", backref="order", passive_deletes=True)
