@@ -197,6 +197,7 @@ def add_items(order_id):
 
     # Create an item from the json data
     item = Item()
+    print(request.get_json())
     item.deserialize(request.get_json())
 
     # Append the item to the order
