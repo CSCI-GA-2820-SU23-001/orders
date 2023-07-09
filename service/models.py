@@ -24,6 +24,7 @@ def init_db(app):
 class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
 
+
 class BaseModel:
     """
     A base class of data model that other order and Item models can inherit from
@@ -34,7 +35,7 @@ class BaseModel:
     @abstractmethod
     def serialize(self):
         """ Convert an object to dictionary """
-    
+
     @abstractmethod
     def deserialize(self, data):
         """ Convert a dictionary to an object """
@@ -84,7 +85,7 @@ class BaseModel:
         return cls.query.get(by_id)
 
 
-#################################################dwd#
+##################################################
 # Item MODEL
 ##################################################
 class Item(db.Model, BaseModel):
@@ -93,22 +94,25 @@ class Item(db.Model, BaseModel):
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    product_id = db.Column(db.Integer, nullable=False) # should be set as ForeignKey db.ForeignKey('product.id'), but this will give "table not found" error 
+    # should be set as ForeignKey db.ForeignKey('product.id'), but this will give "table not found" error
+    product_id = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     total = db.Column(db.Float, nullable=False)
     order_id = db.Column(
         db.Integer, db.ForeignKey("order.id", ondelete="CASCADE"), nullable=False
     )
-    
+
     def serialize(self) -> dict:
         """Serialize an Order into a dict"""
         return {
-            "id": self.id,  
+            "id": self.id,
             "product_id": self.product_id,
             "quantity": self.quantity,
             "total": self.total,
             "order_id": self.order_id,
         }
+
+
     def deserialize(self, data: dict):
         """
         Deserializes a Item from a dictionary
@@ -135,6 +139,7 @@ class Item(db.Model, BaseModel):
 ##################################################
 # ORDER MODEL
 ##################################################
+
 class Order(db.Model, BaseModel):
     """
     A Class that represent Order Model
@@ -143,18 +148,19 @@ class Order(db.Model, BaseModel):
     date = db.Column(db.Date(), nullable=False, default=date.today())
     total = db.Column(db.Float, nullable=False)
     payment = db.Column(
-        db.Enum("CREDITCARD","DEBITCARD", "VEMO", name="payment_enum"),
+        db.Enum("CREDITCARD","DEBITCARD", "VEMO", name="payment_enum"), 
         nullable=False
     )
-    address = db.Column(db.String(100), nullable = False)
-    customer_id = db.Column(db.Integer, nullable=False) # should be set as ForeignKey db.ForeignKey('customer.id'), but this will give "table not found" error 
+    address = db.Column(db.String(100), nullable=False)
+    # should be set as ForeignKey db.ForeignKey('customer.id'), but this will give "table not found" error
+    customer_id = db.Column(db.Integer, nullable=False)
     status = db.Column(
         db.Enum("OPEN","SHIPPING","DELIVERED","CANCELLED", name="status_enum"), 
         nullable=False, 
         server_default="OPEN"
     )
     items = db.relationship("Item", backref="order", passive_deletes=True)
-    
+
     def __repr__(self):
         return f"<Order id=[{self.id}]>"
 
@@ -173,7 +179,7 @@ class Order(db.Model, BaseModel):
         for product in self.items:
             order["items"].append(product.serialize())
         return order
-     
+
     def deserialize(self, data: dict):
         """
         Deserializes an Order from a dictionary
