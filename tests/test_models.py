@@ -2,7 +2,7 @@
 Test cases for Order and OrderModel Model
 
 """
-import os
+#import os
 import logging
 import unittest
 from service import app
@@ -206,7 +206,6 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(new_order.address, order.address)
         self.assertEqual(new_order.customer_id, order.customer_id)
         self.assertEqual(new_order.status, order.status)
-        
 
     def test_deserialize_with_key_error(self):
         """It should not Deserialize an order with a KeyError"""
