@@ -8,12 +8,13 @@ Test cases can be run with the following:
 import os
 import logging
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+# from unittest.mock import MagicMock, patch
 from service import app
-from service.models import db, Order, Item, init_db
+# from service.models import Item
+from service.models import db, Order, init_db
 from tests.factories import ItemFactory, OrderFactory
 from service.common import status  # HTTP Status Codes
-from datetime import date
+# from datetime import date
 from itertools import cycle
 
 
@@ -23,6 +24,7 @@ DATABASE_URI = os.getenv(
 BASE_URL = "/orders"
 NONEXIST_ORDER_ID = "1234"
 NONEXIST_ITEM_ID = "1234"
+
 
 ######################################################################
 #  T E S T   C A S E S
@@ -55,7 +57,7 @@ class TestOrderServer(TestCase):
     def tearDown(self):
         """Runs once after each test case"""
         db.session.remove()
-    
+
     ######################################################################
     #  H E L P E R S   F U N C T I O N S   H E R E
     ######################################################################
@@ -63,11 +65,11 @@ class TestOrderServer(TestCase):
     def _create_orders(self, count):
         """ Method to create orders in bulk
             count -> int: represent the number of orders you want to generate
-		"""
+        """
         orders = []
         # Need to implement
         # Define the constant status values
-        status_values = ["OPEN","SHIPPING","DELIVERED","CANCELLED"]
+        status_values = ["OPEN", "SHIPPING", "DELIVERED", "CANCELLED"]
         # Create a cycle iterator for status values
         status_cycle = cycle(status_values)
 
@@ -100,10 +102,10 @@ class TestOrderServer(TestCase):
         order = OrderFactory(status="OPEN")  # Create an order with 'in progress' status
         resp = self.client.post(
             f"{BASE_URL}",
-            json = order.serialize(), 
-            content_type = "application/json"
+            json=order.serialize(),
+            content_type="application/json"
         )
-        
+
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         orders = Order.all()
         self.assertEqual(len(orders), 1)
@@ -114,11 +116,11 @@ class TestOrderServer(TestCase):
 
         data = resp.get_json()
         # self.assertEqual(data["date"], order.date,"date does not match")
-        self.assertEqual(data["total"],order.total, "total price does not match")
-        self.assertEqual(data["payment"],order.payment, "payment does not match")
-        self.assertEqual(data["address"],order.address, "address does not match")
-        self.assertEqual(data["customer_id"],order.customer_id, "customer_id does not match")
-        self.assertEqual(data["status"],order.status, "status does not match")
+        self.assertEqual(data["total"], order.total, "total price does not match")
+        self.assertEqual(data["payment"], order.payment, "payment does not match")
+        self.assertEqual(data["address"], order.address, "address does not match")
+        self.assertEqual(data["customer_id"], order.customer_id, "customer_id does not match")
+        self.assertEqual(data["status"], order.status, "status does not match")
 
     def test_create_order_missing_info(self):
         """
@@ -151,7 +153,7 @@ class TestOrderServer(TestCase):
     ######################################################################
     #  TEST GET ORDER
     ######################################################################
-    
+
     def test_get_order(self):
         """It should Read a single Order"""
         # get the id of an order
@@ -195,7 +197,7 @@ class TestOrderServer(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-            
+
         # Get the updated order from the response
         updated_order = resp.get_json()
         # Assert that the total of the updated order matches the new total
@@ -251,9 +253,9 @@ class TestOrderServer(TestCase):
 
     def test_cancel_nonexist_order(self):
         """It should cancel an non-existing order"""
-        resp= self.client.put(f"{BASE_URL}/{NONEXIST_ORDER_ID}/cancel")
+        resp = self.client.put(f"{BASE_URL}/{NONEXIST_ORDER_ID}/cancel")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_cancel_order_not_open(self):
         """It should not cancel an order that isn't in open status"""
         orders = self._create_orders(10)
@@ -288,7 +290,7 @@ class TestOrderServer(TestCase):
 
     def test_add_item_nonexist_order(self):
         """It should Add an item to an non-existing order"""
-        resp= self.client.post(f"{BASE_URL}/{NONEXIST_ORDER_ID}/items")
+        resp = self.client.post(f"{BASE_URL}/{NONEXIST_ORDER_ID}/items")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     ######################################################################
@@ -305,7 +307,7 @@ class TestOrderServer(TestCase):
 
     def test_list_items_nonexist_order(self):
         """It should list all items for an non-existing order"""
-        resp= self.client.get(f"{BASE_URL}/{NONEXIST_ORDER_ID}/items")
+        resp = self.client.get(f"{BASE_URL}/{NONEXIST_ORDER_ID}/items")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     ######################################################################
@@ -380,7 +382,7 @@ class TestOrderServer(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-         # send update request
+        # send update request
         resp = self.client.put(
             f"{BASE_URL}/{order.id}/items/{NONEXIST_ITEM_ID}",
             content_type="application/json",
@@ -395,7 +397,7 @@ class TestOrderServer(TestCase):
         """It should Delete an Item"""
         # get the id of an account
         order = self._create_orders(1)[0]
-        
+
         item = ItemFactory(order_id=order.id)
         resp = self.client.post(
             f"{BASE_URL}/{order.id}/items",
@@ -420,7 +422,7 @@ class TestOrderServer(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_delete_nonexist_items(self):
         """It should Delete a non-existing item"""
         order = self._create_orders(1)[0]
@@ -432,7 +434,7 @@ class TestOrderServer(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-         # send delete request
+        # send delete request
         resp = self.client.delete(
             f"{BASE_URL}/{order.id}/items/{NONEXIST_ITEM_ID}",
             content_type="application/json",
@@ -466,5 +468,3 @@ class TestOrderServer(TestCase):
         """It should not allow an illegal method call"""
         resp = self.client.put(BASE_URL, json={"not": "today"})
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-
-

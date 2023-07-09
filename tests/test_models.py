@@ -2,7 +2,7 @@
 Test cases for Order and OrderModel Model
 
 """
-import os
+# import os
 import logging
 import unittest
 from service import app
@@ -87,7 +87,6 @@ class TestOrder(unittest.TestCase):
         orders = Order.all()
         self.assertEqual(len(orders), 1)
 
-
     def test_read_an_order(self):
         """It should Read an Order"""
         order = OrderFactory()
@@ -152,7 +151,7 @@ class TestOrder(unittest.TestCase):
         order = orders[0]
         order.delete()
         orders = Order.all()
-        self.assertEqual(len(orders), 0)    
+        self.assertEqual(len(orders), 0)
 
     def test_cancel_order(self):
         """It should change the status of an order to CANCELLED"""
@@ -176,7 +175,7 @@ class TestOrder(unittest.TestCase):
         same_order = Order.find_by_customer_id(order.customer_id)[0]
         self.assertEqual(same_order.id, order.id)
         self.assertEqual(same_order.customer_id, order.customer_id)
-    
+
     ######################################################################
     #  TEST SERIALIZE / DESERIALIZE ORDER
     ######################################################################
@@ -196,11 +195,10 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(len(serial_order["items"]), 1)
         items = serial_order["items"]
         self.assertEqual(items[0]["id"], item.id)
-        self.assertEqual(items[0]["product_id"],item.product_id)
+        self.assertEqual(items[0]["product_id"], item.product_id)
         self.assertEqual(items[0]["quantity"], item.quantity)
         self.assertEqual(items[0]["total"], item.total)
         self.assertEqual(items[0]["order_id"], item.order_id)
-
 
     def test_deserialize_an_order(self):
         """It should Deserialize an order"""
@@ -216,7 +214,6 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(new_order.address, order.address)
         self.assertEqual(new_order.customer_id, order.customer_id)
         self.assertEqual(new_order.status, order.status)
-        
 
     def test_deserialize_with_key_error(self):
         """It should not Deserialize an order with a KeyError"""
@@ -319,7 +316,7 @@ class TestOrder(unittest.TestCase):
         self.assertIsNotNone(order.id)
         orders = Order.all()
         self.assertEqual(len(orders), 1)
-        
+
         order = Order.find(order.id)
         item = order.items[0]
         item.delete()

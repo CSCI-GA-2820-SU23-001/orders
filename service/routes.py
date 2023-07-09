@@ -3,8 +3,8 @@ My Service
 
 Describe what your service does here
 """
-
-from flask import Flask, jsonify, request, url_for, make_response, abort
+# from flask import Flask
+from flask import jsonify, request, url_for, make_response, abort
 from service.common import status  # HTTP Status Codes
 from service.models import Order, Item
 
@@ -32,7 +32,6 @@ def index():
         update_items      PUT          /orders/<order_id>/items/<item_id>,\n
         delete_items      DELETE       /orders/<order_id>/items/<item_id>
         """
-        ,
         "Reminder: return some useful information in json format about the service here",
         status.HTTP_200_OK,
     )
@@ -52,6 +51,10 @@ def index():
 
 @app.route("/orders", methods=["POST"])
 def create_orders():
+    """
+    Creates an Order
+    This endpoint will create an Order based the data in the body that is posted
+    """
     app.logger.info("Request to Create order...")
     order_data = request.get_json()
     order = Order()
@@ -60,8 +63,9 @@ def create_orders():
     app.logger.info("New order %s is created!", order.id)
 
     resp = order.serialize()
-    location_url = url_for("get_orders", order_id = order.id, _external = True)
-    return jsonify(resp), status.HTTP_201_CREATED,{"Location": location_url}
+    location_url = url_for("get_orders", order_id=order.id, _external=True)
+    return jsonify(resp), status.HTTP_201_CREATED, {"Location": location_url}
+
 
 ######################################################################
 #  UPDATE AN ORDER
@@ -69,6 +73,10 @@ def create_orders():
 
 @app.route('/orders/<int:order_id>', methods=['PUT'])
 def update_orders(order_id):
+    """
+    Update an Order
+    This endpoint will update an Order based the body that is posted
+    """
     app.logger.info("Request to list all orders")
 
     order = Order.find(order_id)
@@ -83,11 +91,14 @@ def update_orders(order_id):
     resp = order.serialize()
     return jsonify(resp), status.HTTP_200_OK
 
+
 ######################################################################
 #  CANCEL AN ORDER
 ######################################################################
+
 @app.route("/orders/<int:order_id>/cancel", methods=["PUT"])
 def cancel_order(order_id):
+    """Canceling an order changes its status to Cancelled"""
     app.logger.info("Request to cancel an order with id: %s", order_id)
     order = Order.find(order_id)
     if not order:
@@ -107,19 +118,27 @@ def cancel_order(order_id):
 ######################################################################
 #  LIST ALL ORDERS
 ######################################################################
+
 @app.route("/orders", methods=["GET"])
 def list_orders():
+    """Returns all of the Orders"""
     app.logger.info("Request to list all orders")
     orders = Order.all()
     resp = [order.serialize() for order in orders]
     app.logger.info("[%s] orders returned", len(resp))
     return make_response(jsonify(resp), status.HTTP_200_OK)
 
+
 ######################################################################
 #  DELETE AN ORDER
 ######################################################################
+
 @app.route("/orders/<int:order_id>", methods=["DELETE"])
 def delete_orders(order_id):
+    """
+    Delete an Order
+    This endpoint will delete an order based the id specified in the path
+    """
     app.logger.info("Request to delete order with id: %s", order_id)
     account = Order.find(order_id)
     if account:
@@ -130,6 +149,7 @@ def delete_orders(order_id):
 ######################################################################
 # READ AN ORDER
 ######################################################################
+
 @app.route("/orders/<int:order_id>", methods=["GET"])
 def get_orders(order_id):
     """
@@ -147,6 +167,7 @@ def get_orders(order_id):
         )
     app.logger.info("Returning order: %s", order.id)
     return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
+
 
 # ---------------------------------------------------------------------
 #                I T E M S   M E T H O D S
@@ -183,12 +204,14 @@ def add_items(order_id):
 
     return make_response(jsonify(message), status.HTTP_201_CREATED)
 
+
 ######################################################################
 # LIST ALL ITEMS
 ######################################################################
 
 @app.route("/orders/<int:order_id>/items", methods=["GET"])
 def list_items(order_id):
+    """Returns all of the Items for an Order"""
     app.logger.info("Request to list all Items for an order with id: %s", order_id)
     order = Order.find(order_id)
     if not order:
@@ -199,10 +222,12 @@ def list_items(order_id):
     resp = [item.serialize() for item in order.items]
     return make_response(jsonify(resp), status.HTTP_200_OK)
 
+
 ######################################################################
 # RETRIEVE AN ITEM FROM AN ORDER
 ######################################################################
-@app.route("/orders/<int:order_id>/items/<int:item_id>", methods = ["GET"])
+
+@app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["GET"])
 def get_items(order_id, item_id):
     """
     this endpoint returns an item in the order
@@ -215,12 +240,17 @@ def get_items(order_id, item_id):
     app.logger.info("Returning item: %s", item.id)
     return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
 
+
 ######################################################################
 # UPDATE AN ITEM
 ######################################################################
 
 @app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["PUT"])
 def update_items(order_id, item_id):
+    """
+    Update an Item
+    This endpoint will update an Item based the body that is posted
+    """
     app.logger.info("Request to update Item %s for Order id: %s", item_id, order_id)
 
     item = Item.find(item_id)
@@ -234,17 +264,24 @@ def update_items(order_id, item_id):
     resp = item.serialize()
     return jsonify(resp), status.HTTP_200_OK
 
+
 ######################################################################
 # DELETE AN ITEM
 ######################################################################
+
 @app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["DELETE"])
 def delete_items(order_id, item_id):
+    """
+    Delete an Order Item
+    This endpoint will delete an item based the id specified in the path
+    """
     app.logger.info("Request to delete Item %s for Order id: %s", item_id, order_id)
     address = Item.find(item_id)
     if address:
         address.delete()
 
     return make_response("", status.HTTP_204_NO_CONTENT)
+
 
 ######################################################################
 # Helper function
@@ -260,4 +297,3 @@ def check_content_type(media_type):
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         f"Content-Type must be {media_type}",
     )
-
