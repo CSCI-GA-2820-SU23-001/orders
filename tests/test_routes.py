@@ -324,7 +324,7 @@ class TestOrderServer(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        
+
         data = resp.get_json()
         item_id = data["id"]
         resp = self.client.get(
@@ -413,7 +413,7 @@ class TestOrderServer(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
     def test_invalid_add_to_cancelled_order_items(self):
         """It should not add an item to an cancelled order"""
         order = self._create_orders(1)[0]
