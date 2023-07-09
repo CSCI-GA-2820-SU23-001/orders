@@ -4,13 +4,14 @@ from factory.fuzzy import FuzzyChoice, FuzzyDate
 from service.models import Order, Item
 import random
 
+
 class OrderFactory(factory.Factory):
     """Persistent class"""
     class Meta:
         model = Order
 
     id = factory.Sequence(lambda n: n)
-    ## name = factory.Faker("name")
+    # name = factory.Faker("name")
     date = FuzzyDate(date(2008, 1, 1))
     total = round(random.uniform(1.00, 1000.00), 2)
     payment = FuzzyChoice(choices=["CREDITCARD", "DEBITCARD", "VEMO"])
@@ -26,6 +27,8 @@ class OrderFactory(factory.Factory):
 
         if extracted:
             self.items = extracted
+
+
 class ItemFactory(factory.Factory):
     """Creates fake Items"""
 
@@ -38,5 +41,5 @@ class ItemFactory(factory.Factory):
     product_id = factory.Faker('random_int', min=1, max=100000)
     quantity = factory.Faker('random_int', min=1, max=10)
     total = round(random.uniform(1.00, 100.00), 2)
-    order_id = factory.LazyAttribute(lambda obj: obj.order.id) 
+    order_id = factory.LazyAttribute(lambda obj: obj.order.id)
     order = factory.SubFactory(OrderFactory)
