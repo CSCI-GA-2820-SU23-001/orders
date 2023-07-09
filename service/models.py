@@ -155,7 +155,7 @@ class Order(db.Model, BaseModel):
     # should be set as ForeignKey db.ForeignKey('customer.id'), but this will give "table not found" error
     customer_id = db.Column(db.Integer, nullable=False)
     status = db.Column(
-        db.Enum("OPEN", "SHIPPING", "DELIVERED", "CANCELLED", name="status_enum"), 
+        db.Enum("OPEN", "SHIPPING", "DELIVERED", "CANCELLED", name="status_enum"),
         nullable=False,
         server_default="OPEN"
     )
