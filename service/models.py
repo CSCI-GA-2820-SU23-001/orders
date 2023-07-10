@@ -216,3 +216,18 @@ class Order(db.Model, BaseModel):
         """Returns all Orders with the given customer id"""
         logger.info("Processing customer id query for %s ...", customer_id)
         return cls.query.filter(cls.customer_id == customer_id)
+
+    @classmethod
+    def find_by_customer_id_and_status(cls, customer_id, status):
+        """
+        Find and return all orders for a given customer id and a specific order status.
+
+        Args:
+            customer_id: The id of the customer.
+            status: The status of the orders to return.
+
+        Returns:
+            A list of orders that match the provided customer id and status.
+        """
+        logger.info("Processing customer-id and status query for %s and %s", customer_id, status)
+        return cls.query.filter(cls.customer_id == customer_id, cls.status == status).all()
