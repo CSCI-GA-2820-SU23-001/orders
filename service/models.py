@@ -211,6 +211,12 @@ class Order(db.Model, BaseModel):
         return self
 
     @classmethod
+    def find_by_status(cls, status):
+        """Returns all Orders with the given status """
+        logger.info("Processing status query for %s ...", status)
+        return cls.query.filter(cls.status == status)
+
+    @classmethod
     def find_by_customer_id(cls, customer_id):
         """Returns all Orders with the given customer id"""
         logger.info("Processing customer id query for %s ...", customer_id)

@@ -168,6 +168,14 @@ class TestOrder(unittest.TestCase):
         orders = Order.all()
         self.assertEqual(order.status, "CANCELLED")
 
+    def test_find_by_status(self):
+        """It should find an order by status"""
+        order = OrderFactory()
+        order.create()
+        same_order = Order.find_by_status(order.status)[0]
+        self.assertEqual(same_order.id, order.id)
+        self.assertEqual(same_order.status, order.status)
+
     def test_find_by_customer_id(self):
         """It should find an order by customer id"""
         order = OrderFactory()
