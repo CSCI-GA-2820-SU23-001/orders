@@ -73,6 +73,33 @@ get_items         GET          /orders/<order_id>/items/<item_id>
 update_items      PUT          /orders/<order_id>/items/<item_id>
 delete_items      DELETE       /orders/<order_id>/items/<item_id>
 ```
+## Useful Kubernetes CLI
+Please make sure you are in the designated namespace before deploying.
+```
+#create namespace and copy container registry secret to the new namespace
+make namespace
+
+#get current namespace
+kc config view --minify -o jsonpath='{..namespace}'
+
+#switch namespace
+kc config set-context --current --namespace=<namespace>
+
+#operate in specific namespace without switching
+kc -n <namespace> ...
+
+#deployw
+kc apply -f <directory/yaml files>
+
+#check pod status
+kc get pods --watch
+
+#inspect pod
+kc describe <pod NAME>
+
+#delete deployment
+kc delete -f <directory/yaml files>
+```
 
 ## License
 

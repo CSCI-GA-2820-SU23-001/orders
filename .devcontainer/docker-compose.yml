@@ -6,11 +6,12 @@ services:
   app:
     build:
       context: ..
-      dockerfile: .devcontainer/Dockerfile    
+      dockerfile: .devcontainer/Dockerfile
     hostname: nyu
     container_name: project
     volumes:
       - ..:/app
+      - ~/.bluemix/apikey-proj.json:/home/vscode/.bluemix/apikey-proj.json
     command: sleep infinity
     environment:
       FLASK_APP: service:app
@@ -36,6 +37,7 @@ services:
 
 volumes:
   postgres:
+
 
 networks:
   dev:
