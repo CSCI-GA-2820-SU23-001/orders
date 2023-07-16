@@ -122,7 +122,13 @@ def cancel_order(order_id):
 def list_orders():
     """Returns all of the Orders"""
     app.logger.info("Request to list all orders")
-    orders = Order.all()
+
+    customer_id_query = request.args.get("customer_id")
+    if customer_id_query:
+        orders = Order.find_by_customer_id(customer_id_query)
+    else:
+        orders = Order.all()
+
     resp = [order.serialize() for order in orders]
     app.logger.info("[%s] orders returned", len(resp))
     return make_response(jsonify(resp), status.HTTP_200_OK)
