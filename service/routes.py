@@ -35,6 +35,16 @@ def index():
         status.HTTP_200_OK,
     )
 
+######################################################################
+# GET HEALTH CHECK
+######################################################################
+
+
+@app.route("/health")
+def healthcheck():
+    """Let them know our heart is still beating"""
+    return make_response(jsonify(status=200, message="OK"), status.HTTP_200_OK)
+
 
 ######################################################################
 #  R E S T   A P I   E N D P O I N T S
