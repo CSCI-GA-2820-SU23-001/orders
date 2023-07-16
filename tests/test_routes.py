@@ -143,12 +143,20 @@ class TestOrderServer(TestCase):
     ######################################################################
 
     def test_list_orders(self):
-        """ It should list all orders """
+        """It should list all orders"""
         self._create_orders(4)
         resp = self.client.get(f"{BASE_URL}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 4)
+
+    def test_list_orders_by_customer_id(self):
+        """It should list orders by customer_id"""
+        orders = self._create_orders(3)
+        resp = self.client.get(BASE_URL, query_string=f"customer_id={orders[1].customer_id}")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data[0]["customer_id"], orders[1].customer_id)
 
     ######################################################################
     #  TEST GET ORDER
