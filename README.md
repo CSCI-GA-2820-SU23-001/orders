@@ -101,6 +101,108 @@ kc describe <pod NAME>
 kc delete -f <directory/yaml files>
 ```
 
+## API Usage
+
+### Create an order
+
+### List all orders
+URL : ```http://127.0.0.1:8000/orders```
+
+Method: GET
+
+Example:
+
+Success Response : ```HTTP_200_OK```
+
+```text
+[
+  {
+    "id": 1,
+    "date": 2023-07-16,
+    "total": 100.00,
+    "payment": "CREDITCARD",
+    "address": "5th Fifth Ave, NY",
+    "customer_id": 2,
+    "status": "OPEN"
+  }
+  {
+    "id": 2,
+    "date": 2023-07-15,
+    "total": 50.00,
+    "payment": "VEMO",
+    "address": "4th Fifth Ave, NY",
+    "customer_id": 3,
+    "status": "DELIVERED"
+  }
+]
+```
+
+### Get an order
+
+### Update an order
+
+### Cancel an order
+URL : ```http://127.0.0.1:8000/orders/<order_id>/cancel```
+
+Method: PUT
+
+Example:
+
+Success Response : ```HTTP_200_OK```
+
+```text
+[
+  {
+    "id": 1,
+    "date": 2023-07-16,
+    "total": 100.00,
+    "payment": "CREDITCARD",
+    "address": "5th Fifth Ave, NY",
+    "customer_id": 2,
+    "status": "CANCELLED"
+  }
+]
+```
+
+### Delete an order
+
+### Create an item in an order
+
+### List all items in an order
+URL : ```http://127.0.0.1:8000/orders/<order_id>/items```
+
+Method: GET
+
+Example:
+
+Success Response : ```HTTP_200_OK```
+
+```text
+[
+  {
+    "id": 1,
+    "product_id": 6,
+    "quantity": 2,
+    "total": 60.00,
+    "order_id": 1,
+  }
+  {
+    "id": 1,
+    "product_id": 7,
+    "quantity": 1,
+    "total": 40.00,
+    "order_id": 1,
+  }
+]
+```
+
+### Get an item in an order
+
+### Update an item in an order
+
+### Delete an item in an order
+
+
 ## License
 
 Copyright (c) John Rofrano. All rights reserved.
