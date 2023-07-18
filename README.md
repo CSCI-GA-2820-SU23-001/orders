@@ -105,6 +105,40 @@ kc delete -f <directory/yaml files>
 ## API Usage
 
 ### Create an order
+URL : ```http://127.0.0.1:8000/orders```
+
+Method: POST
+
+Example:
+
+Request Body (JSON)
+
+```text
+{
+    "date": "2023-07-16",
+    "total": 0.00,
+    "payment": "CREDITCARD",
+    "address": "5th Fifth Ave, NY",
+    "customer_id": 2,
+    "status": "OPEN",
+    "items": []
+  
+}
+```
+Success Response: ```HTTP_201_CREATED```
+
+```text
+{
+  "address": "5th Fifth Ave, NY",
+  "customer_id": 2,
+  "date": "2023-07-16",
+  "id": 1,
+  "items": [],
+  "payment": "CREDITCARD",
+  "status": "OPEN",
+  "total": 0.0
+}
+```
 
 ### List all orders
 URL : ```http://127.0.0.1:8000/orders```
@@ -168,6 +202,33 @@ Success Response : ```HTTP_200_OK```
 ### Delete an order
 
 ### Create an item in an order
+URL : ```http://127.0.0.1:8000/orders/<order_id>/items```
+
+Method: POST
+
+Example:
+
+Request Body (JSON)
+
+```text
+{
+    "id": 1,
+    "product_id": 6,
+    "quantity": 2,
+    "total": 60.00
+}
+```
+Success Response: ```HTTP_201_CREATED```
+
+```text
+{
+  "id": 12,
+  "order_id": 1,
+  "product_id": 6,
+  "quantity": 2,
+  "total": 60.0
+}
+```
 
 ### List all items in an order
 URL : ```http://127.0.0.1:8000/orders/<order_id>/items```
