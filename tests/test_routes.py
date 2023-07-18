@@ -157,7 +157,7 @@ class TestOrderServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(data[0]["customer_id"], orders[1].customer_id)
-    
+
     def test_list_orders_by_status(self):
         """It should list orders by status"""
         orders = self._create_orders(3)
