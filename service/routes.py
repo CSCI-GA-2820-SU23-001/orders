@@ -134,8 +134,11 @@ def list_orders():
     app.logger.info("Request to list all orders")
 
     customer_id_query = request.args.get("customer_id")
+    customer_status_query = request.args.get("status")
     if customer_id_query:
         orders = Order.find_by_customer_id(customer_id_query)
+    elif customer_status_query:
+        orders = Order.find_by_status(customer_status_query)
     else:
         orders = Order.all()
 

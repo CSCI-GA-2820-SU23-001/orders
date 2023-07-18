@@ -158,6 +158,14 @@ class TestOrderServer(TestCase):
         data = resp.get_json()
         self.assertEqual(data[0]["customer_id"], orders[1].customer_id)
 
+    def test_list_orders_by_status(self):
+        """It should list orders by status"""
+        orders = self._create_orders(3)
+        resp = self.client.get(BASE_URL, query_string=f"status={orders[1].status}")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data[0]["status"], orders[1].status)
+
     ######################################################################
     #  TEST GET ORDER
     ######################################################################
