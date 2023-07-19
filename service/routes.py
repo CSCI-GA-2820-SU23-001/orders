@@ -18,22 +18,22 @@ from . import app
 @app.route("/")
 def index():
     """ Root URL response """
-    return (
-        """\n
-        create_orders     POST         /orders,\n
-        list_orders       GET          /orders,\n
-        get_orders        GET          /orders/<order_id>,\n
-        update_orders     PUT          /orders/<order_id>,\n
-        cancel_order      PUT          /orders/<order_id>/cancel,\n
-        delete_orders     DELETE       /orders/<order_id>,\n
-        add_items         POST         /orders/<order_id>/items,\n
-        list_items        GET          /orders/<order_id>/items,\n
-        get_items         GET          /orders/<order_id>/items/<item_id>,\n
-        update_items      PUT          /orders/<order_id>/items/<item_id>,\n
-        delete_items      DELETE       /orders/<order_id>/items/<item_id>
-        """,
-        status.HTTP_200_OK,
-    )
+    service = """
+create_orders     POST         /orders,
+list_orders       GET          /orders,
+get_orders        GET          /orders/<order_id>,
+update_orders     PUT          /orders/<order_id>,
+cancel_order      PUT          /orders/<order_id>/cancel,
+delete_orders     DELETE       /orders/<order_id>,
+add_items         POST         /orders/<order_id>/items,
+list_items        GET          /orders/<order_id>/items,
+get_items         GET          /orders/<order_id>/items/<item_id>,
+update_items      PUT          /orders/<order_id>/items/<item_id>,
+delete_items      DELETE       /orders/<order_id>/items/<item_id>
+        """
+    response = make_response(service, status.HTTP_200_OK)
+    response.mimetype = "text/plain"
+    return response
 
 ######################################################################
 # GET HEALTH CHECK

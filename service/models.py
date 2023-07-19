@@ -95,7 +95,6 @@ class Item(db.Model, BaseModel):
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    # should be set as ForeignKey db.ForeignKey('product.id'), but this will give "table not found" error
     product_id = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     total = db.Column(db.Float, nullable=False)
@@ -123,7 +122,8 @@ class Item(db.Model, BaseModel):
             self.product_id = data["product_id"]
             self.quantity = data["quantity"]
             if self.quantity < 1:
-                raise DataValidationError("Invalid quantity detected in item product: " + str(data["quantity"]))
+                raise DataValidationError("Invalid quantity detected in item product: "
+                                          + str(data["quantity"]))
             self.total = data["total"]
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
@@ -151,7 +151,6 @@ class Order(db.Model, BaseModel):
         nullable=False
     )
     address = db.Column(db.String(100), nullable=False)
-    # should be set as ForeignKey db.ForeignKey('customer.id'), but this will give "table not found" error
     customer_id = db.Column(db.Integer, nullable=False)
     status = db.Column(
         db.Enum("OPEN", "SHIPPING", "DELIVERED", "CANCELLED", name="status_enum"),
@@ -198,8 +197,6 @@ class Order(db.Model, BaseModel):
                 product = Item()
                 product.deserialize(json_product)
                 self.items.append(product)
-        # except AssertionError as error:
-        #     raise DataValidationError("Invalid type for boolean [available]: " + str(type(data["available"])))
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
