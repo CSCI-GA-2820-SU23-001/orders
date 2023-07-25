@@ -2,7 +2,7 @@
 REGISTRY ?= us.icr.io
 NAMESPACE ?= nicksome
 IMAGE_NAME ?= orders
-IMAGE_TAG ?= 1.0
+IMAGE_TAG ?= 1.2
 IMAGE ?= $(REGISTRY)/$(NAMESPACE)/$(IMAGE_NAME):$(IMAGE_TAG)
 # PLATFORM ?= "linux/amd64,linux/arm64"
 PLATFORM ?= "linux/amd64"
@@ -110,3 +110,7 @@ remove:	## Stop and remove the buildx builder
 	$(info Stopping and removing the builder image...)
 	docker buildx stop
 	docker buildx rm
+
+.PHONY: tag
+image-tag:
+	$(info $(IMAGE_TAG))
