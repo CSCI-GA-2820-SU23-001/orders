@@ -59,6 +59,7 @@ tests/              - test cases package
 ```
 
 ## RESTful routes for orders and items
+
 ```text
 Endpoint          Method       Rule
 ----------------  -------      -----------------------------------------------------
@@ -74,37 +75,11 @@ get_items         GET          /orders/<order_id>/items/<item_id>
 update_items      PUT          /orders/<order_id>/items/<item_id>
 delete_items      DELETE       /orders/<order_id>/items/<item_id>
 ```
-## Useful Kubernetes CLI
-Please make sure you are in the designated namespace before deploying.
-```
-#create namespace and copy container registry secret to the new namespace
-make namespace
-
-#get current namespace
-kc config view --minify -o jsonpath='{..namespace}'
-
-#switch namespace
-kc config set-context --current --namespace=<namespace>
-
-#operate in specific namespace without switching
-kc -n <namespace> ...
-
-#deployw
-kc apply -f <directory/yaml files>
-
-#check pod status
-kc get pods --watch
-
-#inspect pod
-kc describe <pod NAME>
-
-#delete deployment
-kc delete -f <directory/yaml files>
-```
 
 ## API Usage
 
 ### Create an order
+
 URL : ```http://127.0.0.1:8000/orders```
 
 Method: POST
@@ -125,6 +100,7 @@ Request Body (JSON)
   
 }
 ```
+
 Success Response: ```HTTP_201_CREATED```
 
 ```text
@@ -141,6 +117,7 @@ Success Response: ```HTTP_201_CREATED```
 ```
 
 ### List all orders
+
 URL : ```http://127.0.0.1:8000/orders```
 
 Method: GET
@@ -174,9 +151,64 @@ Success Response : ```HTTP_200_OK```
 
 ### Get an order
 
+URL : ```http://127.0.0.1:8000/orders/<order_id>```
+
+Method: GET
+
+Example:
+
+Success Response : ```HTTP_200_OK```
+
+```text
+{
+  "id": 1,
+  "date": 2023-07-16,
+  "total": 100.00,
+  "payment": "CREDITCARD",
+  "address": "5th Fifth Ave, NY",
+  "customer_id": 2,
+  "status": "OPEN"
+}
+```
+
 ### Update an order
 
+URL : ```http://127.0.0.1:8000/orders/<order_id>```
+
+Method: PUT
+
+Example:
+
+Request Body (JSON)
+
+```text
+{
+  "id": 1,
+  "date": 2023-07-16,
+  "total": 200.00,
+  "payment": "CREDITCARD",
+  "address": "5th Fifth Ave, NY",
+  "customer_id": 2,
+  "status": "OPEN"
+}
+```
+
+Success Response : ```HTTP_200_OK```
+
+```text
+{
+  "id": 1,
+  "date": 2023-07-16,
+  "total": 200.00,
+  "payment": "CREDITCARD",
+  "address": "5th Fifth Ave, NY",
+  "customer_id": 2,
+  "status": "OPEN"
+}
+```
+
 ### Cancel an order
+
 URL : ```http://127.0.0.1:8000/orders/<order_id>/cancel```
 
 Method: PUT
@@ -201,7 +233,18 @@ Success Response : ```HTTP_200_OK```
 
 ### Delete an order
 
+URL : ```http://127.0.0.1:8000/orders/<order_id>```
+
+Method: DELETE
+
+Example:
+
+Request Body: None
+
+Success Response: ```HTTP_204_NO_CONTENT```
+
 ### Create an item in an order
+
 URL : ```http://127.0.0.1:8000/orders/<order_id>/items```
 
 Method: POST
@@ -218,6 +261,7 @@ Request Body (JSON)
     "total": 60.00
 }
 ```
+
 Success Response: ```HTTP_201_CREATED```
 
 ```text
@@ -231,6 +275,7 @@ Success Response: ```HTTP_201_CREATED```
 ```
 
 ### List all items in an order
+
 URL : ```http://127.0.0.1:8000/orders/<order_id>/items```
 
 Method: GET
@@ -260,10 +305,97 @@ Success Response : ```HTTP_200_OK```
 
 ### Get an item in an order
 
+URL : ```http://127.0.0.1:8000/orders/<order_id>/items/<item_id>```
+
+Method: GET
+
+Example:
+
+Success Response : ```HTTP_200_OK```
+
+```text
+{
+  "id": 1,
+  "product_id": 6,
+  "quantity": 2,
+  "total": 60.00,
+  "order_id": 1,
+}
+```
+
 ### Update an item in an order
+
+URL : ```http://127.0.0.1:8000/orders/<order_id>/items/<item_id>```
+
+Method: PUT
+
+Example:
+
+Request Body (JSON)
+
+```text
+{
+  "id": 1,
+  "product_id": 6,
+  "quantity": 3,
+  "total": 180.00,
+  "order_id": 1,
+}
+```
+
+Success Response : ```HTTP_200_OK```
+
+```text
+{
+  "id": 1,
+  "product_id": 6,
+  "quantity": 3,
+  "total": 180.00,
+  "order_id": 1,
+}
+```
 
 ### Delete an item in an order
 
+URL : ```http://127.0.0.1:8000/orders/<order_id>/items/<item_id>```
+
+Method: DELETE
+
+Example:
+
+Request Body: None
+
+Success Response: ```HTTP_204_NO_CONTENT```
+
+## Useful Kubernetes CLI
+
+Please make sure you are in the designated namespace before deploying.
+
+```
+#create namespace and copy container registry secret to the new namespace
+make namespace
+
+#get current namespace
+kc config view --minify -o jsonpath='{..namespace}'
+
+#switch namespace
+kc config set-context --current --namespace=<namespace>
+
+#operate in specific namespace without switching
+kc -n <namespace> ...
+
+#deployw
+kc apply -f <directory/yaml files>
+
+#check pod status
+kc get pods --watch
+
+#inspect pod
+kc describe <pod NAME>
+
+#delete deployment
+kc delete -f <directory/yaml files>
+```
 
 ## License
 
