@@ -183,7 +183,6 @@ Request Body (JSON)
 
 ```text
 {
-  "id": 1,
   "date": 2023-07-16,
   "total": 200.00,
   "payment": "CREDITCARD",
@@ -239,8 +238,6 @@ Method: DELETE
 
 Example:
 
-Request Body: None
-
 Success Response: ```HTTP_204_NO_CONTENT```
 
 ### Create an item in an order
@@ -255,7 +252,6 @@ Request Body (JSON)
 
 ```text
 {
-    "id": 1,
     "product_id": 6,
     "quantity": 2,
     "total": 60.00
@@ -294,7 +290,7 @@ Success Response : ```HTTP_200_OK```
     "order_id": 1,
   }
   {
-    "id": 1,
+    "id": 2,
     "product_id": 7,
     "quantity": 1,
     "total": 40.00,
@@ -335,7 +331,6 @@ Request Body (JSON)
 
 ```text
 {
-  "id": 1,
   "product_id": 6,
   "quantity": 3,
   "total": 180.00,
@@ -362,8 +357,6 @@ URL : ```http://127.0.0.1:8000/orders/<order_id>/items/<item_id>```
 Method: DELETE
 
 Example:
-
-Request Body: None
 
 Success Response: ```HTTP_204_NO_CONTENT```
 
