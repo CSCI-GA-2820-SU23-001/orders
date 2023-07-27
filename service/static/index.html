@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Order Service</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="static/css/blue_bootstrap.min.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="page-header">
+          <h1>Order REST API Service</h1>
+      </div>
+
+      <!-- Flash Message -->
+      <div class="table-responsive">
+        <table class="table">
+          <tr><td>Status:</td><td><span id="flash_message"></span></td></tr>
+        </table>
+      </div>
+
+      <!-- FORM -->
+      <div class="col-md-12" id="form_data">
+        <h3>Create, Retrieve, Update, and Delete an Order:</h3>
+        <div class="well">
+          <div class="form-horizontal">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="order_id">Order ID:</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="order_id" placeholder="Enter ID of Order">
+              </div>
+              <div class="col-sm-4">
+                <button type="submit" class="btn btn-primary" id="retrieve-btn">Retrieve</button>
+                <button type="submit" class="btn btn-danger" id="delete-btn">Delete</button>
+              </div>
+            </div>
+          </div> <!-- form horizontal -->
+
+          <div class="form-horizontal">
+
+            <!-- DATE -->
+            <!-- <div class="form-group">
+                <label class="control-label col-sm-2" for="order_date">Date:</label>
+                <div class="col-sm-10">
+                  <input type="date" class="form-control" name="order_date" id="order_date" placeholder="2023-07-26">
+                </div>
+              </div> -->
+
+            <!-- TOTAL -->
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="order_total">Total:</label>
+              <div class="col-sm-10">
+                <input type="number" pattern= "\d{2}" class="form-control" name="order_total" id="order_total" placeholder="Enter the total price" required>
+              </div>
+            </div>
+
+            <!-- PAYMENT -->
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="order_payment">Payment:</label>
+                <div class="col-sm-10">
+                  <select class="form-control" name="order_payment" id="order_payment">
+                    <option value="CREDITCARD" selected>CREDITCARD</option>
+                    <option value="DEBITCARD">DEBITCARD</option>
+                    <option value="VEMO">VEMO</option>
+                  </select>
+                </div>
+              </div>
+
+            <!-- ADDRESS -->
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="order_address">Address:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="order_address" id="order_address" placeholder="Enter the address" required>
+              </div>
+            </div>
+
+            <!-- CUSTOMER ID -->
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="order_customer_id">Customer_id:</label>
+              <div class="col-sm-10">
+                <input type="number" class="form-control" name="order_customer_id" id="order_customer_id" placeholder="Enter the customer_id" required>
+              </div>
+            </div>
+
+            <!-- STATUS -->
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="order_status">Status:</label>
+              <div class="col-sm-10">
+                <select class="form-control" name="order_status" id="order_status">
+                    <option value="OPEN" selected>OPEN</option>
+                    <option value="SHIPPING">SHIPPING</option>
+                    <option value="DELIVERED">DELIVERED</option>
+                    <option value="CANCELLED">CANCELLED</option>
+                  </select>
+              </div>
+            </div>
+
+
+            <!-- SUBMIT BUTTONS -->
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary" id="search-btn">Search</button>
+                <button type="submit" class="btn btn-primary" id="clear-btn">Clear</button>
+                <button type="submit" class="btn btn-success" id="create-btn">Create</button>
+                <button type="submit" class="btn btn-warning" id="update-btn">Update</button>
+                <button type="submit" class="btn btn-warning" id="cancel-btn">Cancel</button>
+              </div>
+            </div>
+
+          </div> <!-- form horizontal -->
+        </div> <!-- end well -->
+      </div> <!-- end Form -->
+      </form>
+
+      <div class="table-responsive col-md-12" id="search_results">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th class="col-md-1">ID</th>
+            <th class="col-md-4">Date</th>
+            <th class="col-md-3">Total</th>
+            <th class="col-md-3">Payment</th>
+            <th class="col-md-4">Address</th>
+            <th class="col-md-3">Customer_id</th>
+            <th class="col-md-3">Status</th>
+
+          </tr>
+          </thead>
+        </table>
+      </div>
+
+      <footer>
+        <br><br>
+        <p>&copy; NYU DevOps Company 2023</p>
+      </footer>
+
+    </div> <!-- container -->
+
+    <script type="text/javascript" src = "static/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src = "static/js/bootstrap.min.js"></script>
+  
+    <!-- YOUR REST API -->
+    <script type="text/javascript" src="static/js/rest_api.js"></script>
+
+  </body>
+</html>
