@@ -17,23 +17,8 @@ from . import app
 ######################################################################
 @app.route("/")
 def index():
-    """ Root URL response """
-    service = """
-create_orders     POST         /orders,
-list_orders       GET          /orders,
-get_orders        GET          /orders/<order_id>,
-update_orders     PUT          /orders/<order_id>,
-cancel_order      PUT          /orders/<order_id>/cancel,
-delete_orders     DELETE       /orders/<order_id>,
-add_items         POST         /orders/<order_id>/items,
-list_items        GET          /orders/<order_id>/items,
-get_items         GET          /orders/<order_id>/items/<item_id>,
-update_items      PUT          /orders/<order_id>/items/<item_id>,
-delete_items      DELETE       /orders/<order_id>/items/<item_id>
-        """
-    response = make_response(service, status.HTTP_200_OK)
-    response.mimetype = "text/plain"
-    return response
+    """Base URL for our service"""
+    return app.send_static_file("index.html")
 
 ######################################################################
 # GET HEALTH CHECK
