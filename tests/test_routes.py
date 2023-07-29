@@ -522,9 +522,10 @@ class TestOrderServer(TestCase):
                          status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     def test_index(self):
-        """It should call the Home Page"""
-        resp = self.client.get("/")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        """It should return the index page"""
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(b"Order REST API Service", response.data)
 
     def test_health(self):
         """It should call the Home Page"""

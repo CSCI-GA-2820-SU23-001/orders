@@ -54,7 +54,7 @@ $(function () {
         };
 
         $("#flash_message").empty();
-        
+
         let ajax = $.ajax({
             type: "POST",
             url: "/orders",
@@ -62,12 +62,12 @@ $(function () {
             data: JSON.stringify(data),
         });
 
-        ajax.done(function(res){
+        ajax.done(function (res) {
             update_form_data(res)
             flash_message("Success")
         });
 
-        ajax.fail(function(res){
+        ajax.fail(function (res) {
             flash_message(res.responseJSON.message)
         });
     });
@@ -97,18 +97,18 @@ $(function () {
         $("#flash_message").empty();
 
         let ajax = $.ajax({
-                type: "PUT",
-                url: `/orders/${order_id}`,
-                contentType: "application/json",
-                data: JSON.stringify(data)
-            })
+            type: "PUT",
+            url: `/orders/${order_id}`,
+            contentType: "application/json",
+            data: JSON.stringify(data)
+        })
 
-        ajax.done(function(res){
+        ajax.done(function (res) {
             update_form_data(res)
             flash_message("Success")
         });
 
-        ajax.fail(function(res){
+        ajax.fail(function (res) {
             flash_message(res.responseJSON.message)
         });
 
@@ -131,13 +131,13 @@ $(function () {
             data: ''
         })
 
-        ajax.done(function(res){
+        ajax.done(function (res) {
             //alert(res.toSource())
             update_form_data(res)
             flash_message("Success")
         });
 
-        ajax.fail(function(res){
+        ajax.fail(function (res) {
             clear_form_data()
             flash_message(res.responseJSON.message)
         });
@@ -155,24 +155,24 @@ $(function () {
 
         let ajax = $.ajax({
             type: "PUT",
-            url:`/orders/${order_id}/cancel`,
+            url: `/orders/${order_id}/cancel`,
             contentType: "application/json",
             data: ''
         })
 
-        ajax.done(function(res){
+        ajax.done(function (res) {
             //alert(res.toSource())
             update_form_data(res)
             flash_message("Success")
         });
 
-        ajax.fail(function(res){
+        ajax.fail(function (res) {
             clear_form_data()
             flash_message(res.responseJSON.message)
         });
 
     });
-    
+
     // ****************************************
     // Delete a Pet
     // ****************************************
@@ -190,12 +190,12 @@ $(function () {
             data: '',
         })
 
-        ajax.done(function(res){
+        ajax.done(function (res) {
             clear_form_data()
             flash_message("Pet has been Deleted!")
         });
 
-        ajax.fail(function(res){
+        ajax.fail(function (res) {
             flash_message("Server error!")
         });
     });
@@ -211,32 +211,36 @@ $(function () {
     });
 
     // ****************************************
-    // Search for a Pet
+    // Search for an Order
     // ****************************************
 
     $("#search-btn").click(function () {
+        let order_id = $("#order_id").val();
+        let order_date = $("#order_date").val();
+        let total = $("#order_total").val();
+        let payment = $("#order_payment").val();
+        let address = $("#order_address").val();
 
-        let name = $("#order_name").val();
-        let category = $("#order_category").val();
-        let available = $("#order_available").val() == "true";
+        $("#flash_message").empty();
+
+        if (order_id || order_date || total || payment || address) {
+            flash_message("Only support Customer_id and Status query");
+            return;
+        }
+
+        let customer_id = $("#order_customer_id").val();
+        let status = $("#order_status").val();
 
         let queryString = ""
 
-        if (name) {
-            queryString += 'name=' + name
+        if (customer_id) {
+            queryString += 'customer_id=' + customer_id
         }
-        if (category) {
+        if (status) {
             if (queryString.length > 0) {
-                queryString += '&category=' + category
+                queryString += '&status=' + status
             } else {
-                queryString += 'category=' + category
-            }
-        }
-        if (available) {
-            if (queryString.length > 0) {
-                queryString += '&available=' + available
-            } else {
-                queryString += 'available=' + available
+                queryString += 'status=' + status
             }
         }
 
@@ -249,38 +253,38 @@ $(function () {
             data: ''
         })
 
-        ajax.done(function(res){
-            //alert(res.toSource())
+        ajax.done(function (res) {
             $("#search_results").empty();
             let table = '<table class="table table-striped" cellpadding="10">'
             table += '<thead><tr>'
             table += '<th class="col-md-2">ID</th>'
-            table += '<th class="col-md-2">Name</th>'
-            table += '<th class="col-md-2">Category</th>'
-            table += '<th class="col-md-2">Available</th>'
-            table += '<th class="col-md-2">Gender</th>'
-            table += '<th class="col-md-2">Birthday</th>'
+            table += '<th class="col-md-2">Date</th>'
+            table += '<th class="col-md-2">Total</th>'
+            table += '<th class="col-md-2">Payment</th>'
+            table += '<th class="col-md-2">Address</th>'
+            table += '<th class="col-md-2">Customer_id</th>'
+            table += '<th class="col-md-2">Status</th>'
             table += '</tr></thead><tbody>'
-            let firstPet = "";
-            for(let i = 0; i < res.length; i++) {
+            let firstOrder = "";
+            for (let i = 0; i < res.length; i++) {
                 let order = res[i];
-                table +=  `<tr id="row_${i}"><td>${order.id}</td><td>${order.name}</td><td>${order.category}</td><td>${order.available}</td><td>${order.gender}</td><td>${order.birthday}</td></tr>`;
+                table += `<tr id="row_${i}"><td>${order.id}</td><td>${order.date}</td><td>${order.total}</td><td>${order.payment}</td><td>${order.address}</td><td>${order.customer_id}</td><td>${order.status}</td></tr>`;
                 if (i == 0) {
-                    firstPet = order;
+                    firstOrder = order;
                 }
             }
             table += '</tbody></table>';
             $("#search_results").append(table);
 
             // copy the first result to the form
-            if (firstPet != "") {
-                update_form_data(firstPet)
+            if (firstOrder != "") {
+                update_form_data(firstOrder)
             }
 
             flash_message("Success")
         });
 
-        ajax.fail(function(res){
+        ajax.fail(function (res) {
             flash_message(res.responseJSON.message)
         });
 
