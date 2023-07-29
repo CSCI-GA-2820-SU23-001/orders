@@ -32,7 +32,6 @@ from selenium.webdriver.support import expected_conditions
 
 ID_PREFIX = 'order_'
 
-
 @when('I visit the "home page"')
 def step_impl(context):
     """ Make a call to the base URL """
@@ -48,6 +47,7 @@ def step_impl(context, message):
 @then('I should not see "{text_string}"')
 def step_impl(context, text_string):
     element = context.driver.find_element(By.TAG_NAME, 'body')
+    error_msg = "I should not see '%s' in '%s'" % (text_string, element.text)
     assert(text_string not in element.text)
 
 @when('I set the "{element_name}" to "{text_string}"')
@@ -160,3 +160,4 @@ def step_impl(context, element_name, text_string):
     )
     element.clear()
     element.send_keys(text_string)
+    assert(found)

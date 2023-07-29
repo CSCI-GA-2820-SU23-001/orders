@@ -1,4 +1,4 @@
-######################################################################
+#####################################################################
 # Copyright 2016, 2023 John J. Rofrano. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 """
 Order Steps
 
-Steps file for Order.feature
+Steps file for orders.feature
 
 For information on Waiting until elements are present in the HTML see:
     https://selenium-python.readthedocs.io/waits.html

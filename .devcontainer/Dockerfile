@@ -1,4 +1,4 @@
-# Image for a NYU Lab development environment
+# This image has selenium and chrome driver already installed
 FROM rofrano/pipeline-selenium
 
 ## Uncomment below lines to add Selenium for BDD
