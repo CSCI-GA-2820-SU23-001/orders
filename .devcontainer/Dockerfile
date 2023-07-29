@@ -1,5 +1,5 @@
-# Image for a NYU Lab development environment
-FROM rofrano/nyu-devops-base:sp23
+# This image has selenium and chrome driver already installed
+FROM rofrano/pipeline-selenium
 
 ## Uncomment below lines to add Selenium for BDD
 # RUN sudo apt-get update && \

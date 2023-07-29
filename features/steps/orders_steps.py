@@ -36,7 +36,7 @@ def step_impl(context):
     """ Delete all Orders and load new ones """
 
     # List all of the orders and delete them one by one
-    rest_endpoint = f"{context.BASE_URL}/orders"
+    rest_endpoint = f"{context.base_url}/orders"
     context.resp = requests.get(rest_endpoint)
     assert(context.resp.status_code == HTTP_200_OK)
     for order in context.resp.json():
@@ -51,7 +51,8 @@ def step_impl(context):
             "payment": row['payment'],
             "address": row['address'],
             "customer_id": row['customer_id'],
-            "status": row['status']
+            "status": row['status'],
+            "items": []
         }
         context.resp = requests.post(rest_endpoint, json=payload)
         assert(context.resp.status_code == HTTP_201_CREATED)
