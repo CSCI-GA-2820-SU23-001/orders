@@ -33,7 +33,7 @@ $(function () {
     }
 
     // ****************************************
-    // Create a Order
+    // Create an Order
     // ****************************************
 
     $("#create-btn").click(function () {
@@ -74,7 +74,7 @@ $(function () {
 
 
     // ****************************************
-    // Update a Pet
+    // Update a Pet (only copy from template, not yet change)
     // ****************************************
 
     $("#update-btn").click(function () {
@@ -115,7 +115,7 @@ $(function () {
     });
 
     // ****************************************
-    // Retrieve a Pet
+    // Retrieve an Order
     // ****************************************
 
     $("#retrieve-btn").click(function () {
