@@ -20,7 +20,7 @@ Feature: The order store service back-end
         Then I should see "Order Service" in the title
         And I should not see "404 Not Found"
 
-    Scenario: Search by customer
+    Scenario: Search by customer id
         When I visit the "Home Page"
         And I set the "Customer ID" to "11"
         And I press the "Search" button
@@ -39,12 +39,6 @@ Feature: The order store service back-end
         And I should not see "SHIPPING" in the results
         And I should not see "DELIVERED" in the results
         And I should not see "CANCELLED" in the results
-
-    Scenario: The server is running
-        When I visit the "Home Page"
-        Then I should see "Order Service" in the title
-        And I should not see "404 Not Found"
-
     Scenario: List all orders
         When I visit the "Home Page"
         And I press the "Search" button
