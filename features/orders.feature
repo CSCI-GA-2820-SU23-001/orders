@@ -20,6 +20,37 @@ Feature: The order store service back-end
         Then I should see "Order Service" in the title
         And I should not see "404 Not Found"
 
+
+    Scenario: Create an Order
+    When I visit the "Home Page"
+    And I set the "Date" to "2019-05-14"
+    And I set the "Total" to "871.17"
+    And I set the "Payment" to "CREDITCARD"
+    And I set the "Address" to "59581 Gutierrez Walks North Tyler, NC 31808"
+    And I set the "customer_id" to "92931"
+    And I set the "status" to "OPEN"
+    And I press the "Create" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    Then the "Id" field should be empty
+    And the "Date" field should be empty
+    And the "Total" field should be empty
+    And the "Payment" field should be empty
+    And the "Address" field should be empty
+    And the "Customer_id" field should be empty
+    And the "Status" field should be empty
+    When I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "2019-05-14" in the "Date" field
+    And I should see "871.17" in the "Total" field
+    And I should see "CREDITCARD" in the "Payment" field
+    And I should see "59581 Gutierrez Walks North Tyler, NC 31808" in the "Address" field
+    And I should see "92931" in the "Customer_id" field
+    And I should see "OPEN" in the "Status" field
+
+
     Scenario: Search by customer id
         When I visit the "Home Page"
         And I set the "Customer ID" to "11"
