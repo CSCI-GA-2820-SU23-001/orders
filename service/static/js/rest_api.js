@@ -174,7 +174,7 @@ $(function () {
     });
 
     // ****************************************
-    // Delete a Pet
+    // Delete an Order
     // ****************************************
 
     $("#delete-btn").click(function () {
@@ -192,7 +192,7 @@ $(function () {
 
         ajax.done(function (res) {
             clear_form_data()
-            flash_message("Pet has been Deleted!")
+            flash_message("Order has been Deleted!")
         });
 
         ajax.fail(function (res) {
