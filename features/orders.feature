@@ -55,9 +55,9 @@ Feature: The order store service back-end
         And I press the "Search" button
         Then I should see the message "Success"
         And I should see "11" in the results
-        And I should not see "22" in the results
-        And I should not see "33" in the results
-        And I should not see "44" in the results
+        And I should not see "6th Fifth Ave, NY" in the results
+        And I should not see "7th Fifth Ave, NY" in the results
+        And I should not see "8th Fifth Ave, NY" in the results
 
     Scenario: Search by status
         When I visit the "Home Page"
