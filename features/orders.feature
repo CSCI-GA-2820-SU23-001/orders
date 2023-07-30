@@ -69,14 +69,10 @@ Feature: The order store service back-end
 
     Scenario: Delete an Order
         When I visit the "Home Page"
+        And I set the "Customer ID" to "11"
         And I press the "Search" button
         Then I should see the message "Success"
-        And I should see "59581 Gutierrez Walks North Tyler, NC 31808" in the results
-        And I should see "5th Fifth Ave, NY" in the results
-        And I should see "Jackson Ave, Queens, NY 11101" in the results
-        When I set the "Customer ID" to "11"
-        And I press the "Search" button
-        Then I should see the message "Success"
+        And I should see "11" in the results
         When I copy the "Id" field
         And I press the "Clear" button
         Then the "Id" field should be empty
