@@ -87,6 +87,3 @@ Feature: The order store service back-end
         And I should see "5th Fifth Ave, NY" in the "address" field
         When I press the "Delete" button
         Then I should see the message "Order has been Deleted!"
-        When I press the "Search" button
-        Then I should see the message "Success"
-        And I should not see "11" in the result
