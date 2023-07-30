@@ -45,10 +45,10 @@ Feature: The order store service back-end
     Then I should see the message "Success"
     And I should see "2019-05-14" in the "Date" field
     And I should see "871.17" in the "Total" field
-    And I should see "CREDITCARD" in the "Payment" field
+    And I should see "CREDITCARD" in the "Payment" dropdown
     And I should see "59581 Gutierrez Walks North Tyler, NC 31808" in the "Address" field
     And I should see "92931" in the "Customer_id" field
-    And I should see "OPEN" in the "Status" field
+    And I should see "OPEN" in the "Status" dropdown
 
 
     Scenario: Search by customer id
