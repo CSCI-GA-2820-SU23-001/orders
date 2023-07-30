@@ -25,10 +25,10 @@ Feature: The order store service back-end
     When I visit the "Home Page"
     And I set the "Date" to "2019-05-14"
     And I set the "Total" to "871.17"
-    And I set the "Payment" to "CREDITCARD"
+    And I select "CREDITCARD" in the "Payment" dropdown
     And I set the "Address" to "59581 Gutierrez Walks North Tyler, NC 31808"
     And I set the "customer_id" to "92931"
-    And I set the "status" to "OPEN"
+    And I select "OPEN" in the "Status" dropdown
     And I press the "Create" button
     Then I should see the message "Success"
     When I copy the "Id" field
@@ -36,10 +36,8 @@ Feature: The order store service back-end
     Then the "Id" field should be empty
     And the "Date" field should be empty
     And the "Total" field should be empty
-    And the "Payment" field should be empty
     And the "Address" field should be empty
     And the "Customer_id" field should be empty
-    And the "Status" field should be empty
     When I paste the "Id" field
     And I press the "Retrieve" button
     Then I should see the message "Success"
@@ -97,3 +95,25 @@ Feature: The order store service back-end
         And I should see "59581 Gutierrez Walks North Tyler, NC 31808" in the "address" field
         And I should see "92931" in the "customer_id" field
         And I should see "OPEN" in the "status" dropdown
+
+
+    Scenario: Delete an Order
+        When I visit the "Home Page"
+        And I set the "Customer ID" to "11"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "11" in the results
+        When I copy the "Id" field
+        And I press the "Clear" button
+        Then the "Id" field should be empty
+        And the "Date" field should be empty
+        And the "Address" field should be empty
+        When I paste the "Id" field
+        And I press the "Retrieve" button
+        Then I should see the message "Success"
+        And I should see "2019-01-01" in the "date" field
+        And I should see "100" in the "total" field
+        And I should see "CREDITCARD" in the "payment" dropdown
+        And I should see "5th Fifth Ave, NY" in the "address" field
+        When I press the "Delete" button
+        Then I should see the message "Order has been Deleted!"

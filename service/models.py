@@ -199,8 +199,6 @@ class Order(db.Model, BaseModel):
                 self.items.append(product)
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
-        except KeyError as error:
-            raise DataValidationError("Invalid order: missing " + error.args[0]) from error
         except TypeError as error:
             raise DataValidationError(
                 "Invalid order: body of request contained bad or no data " + str(error)
