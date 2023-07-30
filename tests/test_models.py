@@ -237,6 +237,7 @@ class TestOrder(unittest.TestCase):
         order = Order()
         self.assertRaises(DataValidationError, order.deserialize, {})
 
+
     def test_deserialize_with_type_error(self):
         """It should not Deserialize an order with a TypeError"""
         order = Order()

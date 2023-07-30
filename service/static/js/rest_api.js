@@ -38,7 +38,6 @@ $(function () {
 
     $("#create-btn").click(function () {
 
-        let id = $("#order_id").val()
         let date = $("#order_date").val();
         let total = $("#order_total").val();
         let payment = $("#order_payment").val();
