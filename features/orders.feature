@@ -87,3 +87,13 @@ Feature: The order store service back-end
         And I should see "5th Fifth Ave, NY" in the "address" field
         When I press the "Delete" button
         Then I should see the message "Order has been Deleted!"
+    
+    Scenario: Cancel an Order
+        When I visit the "Home Page"
+        And I set the "Customer ID" to "11"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "11" in the results
+        When I copy the "Id" field
+        And I press the "Cancel" button
+        Then I should see "CANCELLED" in the "Status" dropdown
