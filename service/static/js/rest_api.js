@@ -81,6 +81,7 @@ $(function () {
     $("#update-btn").click(function () {
 
         let order_id = $("#order_id").val();
+        let date = $("#order_date").val();
         let total = $("#order_total").val();
         let payment = $("#order_payment").val();
         let address = $("#order_address").val();
@@ -88,6 +89,7 @@ $(function () {
         let status = $("#order_status").val();
 
         let data = {
+            "date": date,
             "total": total,
             "payment": payment,
             "address": address,
