@@ -74,24 +74,24 @@ $(function () {
 
 
     // ****************************************
-    // Update a Pet (only copy from template, not yet change)
+    // Update an Order
     // ****************************************
 
     $("#update-btn").click(function () {
 
         let order_id = $("#order_id").val();
-        let name = $("#order_name").val();
-        let category = $("#order_category").val();
-        let available = $("#order_available").val() == "true";
-        let gender = $("#order_gender").val();
-        let birthday = $("#order_birthday").val();
+        let total = $("#order_total").val();
+        let payment = $("#order_payment").val();
+        let address = $("#order_address").val();
+        let customer_id = $("#order_customer_id").val();
+        let status = $("#order_status").val();
 
         let data = {
-            "name": name,
-            "category": category,
-            "available": available,
-            "gender": gender,
-            "birthday": birthday
+            "total": total,
+            "payment": payment,
+            "address": address,
+            "customer_id": customer_id,
+            "status": status
         };
 
         $("#flash_message").empty();
