@@ -187,16 +187,17 @@ class Order(db.Model, BaseModel):
         try:
             # assert(isinstance(data["total"],float), "total")
             self.total = data["total"]
-            self.date = data["date"]
+            self.date = date.fromisoformat(data["date"])
             self.payment = data.get("payment")
             self.address = data["address"]
             self.customer_id = data["customer_id"]
             self.status = data.get("status")
-            items = data["items"]
-            for json_product in items:
-                product = Item()
-                product.deserialize(json_product)
-                self.items.append(product)
+            items = data.get("items")
+            if items:
+                for json_product in items:
+                    product = Item()
+                    product.deserialize(json_product)
+                    self.items.append(product)
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
