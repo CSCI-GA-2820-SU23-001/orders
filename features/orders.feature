@@ -20,7 +20,6 @@ Feature: The order store service back-end
         Then I should see "Order Service" in the title
         And I should not see "404 Not Found"
 
-
     Scenario: Create an Order
         When I visit the "Home Page"
         And I set the "Date" to "2019-05-14"
@@ -48,7 +47,6 @@ Feature: The order store service back-end
         And I should see "92931" in the "Customer_id" field
         And I should see "OPEN" in the "Status" dropdown
 
-
     Scenario: Search by customer id
         When I visit the "Home Page"
         And I set the "Customer ID" to "11"
@@ -68,7 +66,6 @@ Feature: The order store service back-end
         And I should not see "SHIPPING" in the results
         And I should not see "DELIVERED" in the results
         And I should not see "CANCELLED" in the results
-
 
     Scenario: List all orders
         When I visit the "Home Page"
@@ -97,7 +94,6 @@ Feature: The order store service back-end
         And I should see "59581 Gutierrez Walks North Tyler, NC 31808" in the "address" field
         And I should see "92931" in the "customer_id" field
         And I should see "OPEN" in the "status" dropdown
-
 
     Scenario: Delete an Order
         When I visit the "Home Page"
@@ -129,3 +125,25 @@ Feature: The order store service back-end
         When I copy the "Id" field
         And I press the "Cancel" button
         Then I should see "CANCELLED" in the "Status" dropdown
+
+    Scenario: Update an Order
+        When I visit the "Home Page"
+        And I set the "Customer_id" to "92931"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "92931" in the "Customer_id" field
+        And I should see "59581 Gutierrez Walks North Tyler, NC 31808" in the "Address" field
+        When I change "Customer_id" to "13929"
+        And I press the "Update" button
+        Then I should see the message "Success"
+        When I copy the "Id" field
+        And I press the "Clear" button
+        And I paste the "Id" field
+        And I press the "Retrieve" button
+        Then I should see the message "Success"
+        And I should see "13929" in the "Customer_id" field
+        When I press the "Clear" button
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "13929" in the results
+        And I should not see "92931" in the results
