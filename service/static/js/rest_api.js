@@ -17,7 +17,7 @@ $(function () {
 
     /// Clears all form fields
     function clear_form_data() {
-        $("#order_name").val("");
+        $("#order_id").val("");
         $("#order_date").val("");
         $("#order_total").val("");
         $("#order_payment").val("");
@@ -38,7 +38,7 @@ $(function () {
 
     $("#create-btn").click(function () {
 
-        // let date = $("#order_date").val();
+        let date = $("#order_date").val();
         let total = $("#order_total").val();
         let payment = $("#order_payment").val();
         let address = $("#order_address").val();
@@ -46,6 +46,7 @@ $(function () {
         let status = $("#order_status").val();
 
         let data = {
+            "date": date,
             "total": total,
             "payment": payment,
             "address": address,

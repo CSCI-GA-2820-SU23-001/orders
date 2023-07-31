@@ -20,15 +20,44 @@ Feature: The order store service back-end
         Then I should see "Order Service" in the title
         And I should not see "404 Not Found"
 
+
+    Scenario: Create an Order
+        When I visit the "Home Page"
+        And I set the "Date" to "2019-05-14"
+        And I set the "Total" to "871.17"
+        And I select "CREDITCARD" in the "Payment" dropdown
+        And I set the "Address" to "59581 Gutierrez Walks North Tyler, NC 31808"
+        And I set the "Customer_id" to "92931"
+        And I select "OPEN" in the "Status" dropdown
+        And I press the "Create" button
+        Then I should see the message "Success"
+        When I copy the "Id" field
+        And I press the "Clear" button
+        Then the "Id" field should be empty
+        And the "Date" field should be empty
+        And the "Total" field should be empty
+        And the "Address" field should be empty
+        And the "Customer_id" field should be empty
+        When I paste the "Id" field
+        And I press the "Retrieve" button
+        Then I should see the message "Success"
+        And I should see "2019-05-14" in the "Date" field
+        And I should see "871.17" in the "Total" field
+        And I should see "CREDITCARD" in the "Payment" dropdown
+        And I should see "59581 Gutierrez Walks North Tyler, NC 31808" in the "Address" field
+        And I should see "92931" in the "Customer_id" field
+        And I should see "OPEN" in the "Status" dropdown
+
+
     Scenario: Search by customer id
         When I visit the "Home Page"
         And I set the "Customer ID" to "11"
         And I press the "Search" button
         Then I should see the message "Success"
         And I should see "11" in the results
-        And I should not see "22" in the results
-        And I should not see "33" in the results
-        And I should not see "44" in the results
+        And I should not see "6th Fifth Ave, NY" in the results
+        And I should not see "7th Fifth Ave, NY" in the results
+        And I should not see "8th Fifth Ave, NY" in the results
 
     Scenario: Search by status
         When I visit the "Home Page"
@@ -39,6 +68,8 @@ Feature: The order store service back-end
         And I should not see "SHIPPING" in the results
         And I should not see "DELIVERED" in the results
         And I should not see "CANCELLED" in the results
+
+
     Scenario: List all orders
         When I visit the "Home Page"
         And I press the "Search" button
@@ -67,6 +98,7 @@ Feature: The order store service back-end
         And I should see "92931" in the "customer_id" field
         And I should see "OPEN" in the "status" dropdown
 
+
     Scenario: Delete an Order
         When I visit the "Home Page"
         And I set the "Customer ID" to "11"
@@ -87,7 +119,7 @@ Feature: The order store service back-end
         And I should see "5th Fifth Ave, NY" in the "address" field
         When I press the "Delete" button
         Then I should see the message "Order has been Deleted!"
-    
+
     Scenario: Cancel an Order
         When I visit the "Home Page"
         And I set the "Customer ID" to "11"
