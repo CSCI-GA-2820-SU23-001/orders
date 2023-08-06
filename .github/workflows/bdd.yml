@@ -1,4 +1,4 @@
-name: BDD Tests
+name: Test
 on:
   push:
     branches:
@@ -16,7 +16,7 @@ on:
       - "**.md"
 
 jobs:
-  build:
+  bdd:
     runs-on: ubuntu-latest
     container: rofrano/pipeline-selenium:latest
 
