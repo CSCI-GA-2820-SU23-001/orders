@@ -139,7 +139,8 @@ Feature: The order store service back-end
         And I should see "11" in the results
         When I copy the "Id" field
         And I press the "Cancel" button
-        Then I should see "CANCELLED" in the "Status" dropdown
+        Then I should see the message "Success"
+        And I should see "CANCELLED" in the "Status" dropdown
 
     Scenario: Update an Order
         When I visit the "Home Page"
