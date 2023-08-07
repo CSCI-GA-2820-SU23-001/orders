@@ -116,6 +116,12 @@ Feature: The order store service back-end
         And I should see "92931" in the "customer_id" field
         And I should see "OPEN" in the "status" dropdown
 
+    Scenario: Cannot read non existing order
+        When I visit the "Home Page"
+        And I set the "Id" to "0"
+        And I press the "Retrieve" button
+        Then I should see the message "Order Not Found"
+
     Scenario: Delete an Order
         When I visit the "Home Page"
         And I set the "Customer ID" to "11"
