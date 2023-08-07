@@ -82,6 +82,12 @@ Feature: The order store service back-end
         And I should not see "7th Fifth Ave, NY" in the results
         And I should not see "8th Fifth Ave, NY" in the results
 
+    Scenario: Cannot search by order id
+        When I visit the "Home Page"
+        And I set the "Id" to "11"
+        And I press the "Search" button
+        Then I should see the message "Only support Customer_id and Status query"
+
     Scenario: List all orders
         When I visit the "Home Page"
         And I press the "Search" button
