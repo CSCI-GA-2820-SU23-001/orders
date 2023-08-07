@@ -69,7 +69,8 @@ $(function () {
         });
 
         ajax.fail(function (res) {
-            flash_message(res.responseJSON.message)
+            clear_form_data()
+            flash_message("Order Missing Info")
         });
     });
 

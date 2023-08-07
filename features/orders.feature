@@ -47,6 +47,12 @@ Feature: The order store service back-end
         And I should see "92931" in the "Customer_id" field
         And I should see "OPEN" in the "Status" dropdown
 
+    Scenario: Create order with missing info
+        When I visit the "Home Page"
+        And I set the "Date" to "2019-05-14"
+        And I press the "Create" button
+        Then I should see the message "Order Missing Info" 
+
     Scenario: Search by customer id
         When I visit the "Home Page"
         And I set the "Customer ID" to "11"
