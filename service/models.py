@@ -206,6 +206,10 @@ class Order(db.Model, BaseModel):
             raise DataValidationError(
                 "Invalid order: body of request contained bad or no data " + str(error)
             ) from error
+        except ValueError as error:
+            raise DataValidationError(
+                "Invalid order data: " + str(error)
+            ) from error
         return self
 
     @classmethod
