@@ -246,7 +246,7 @@ class TestOrder(unittest.TestCase):
         """It should not Deserialize an order with a ValueError"""
         order = Order()
         self.assertRaises(DataValidationError, order.deserialize, {
-            "date": 2,
+            "date": "",
             "total": 3,
             "payment": "VEMO",
             "address": "123 Main St",
