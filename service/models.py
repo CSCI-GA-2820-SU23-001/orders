@@ -125,8 +125,6 @@ class Item(db.Model, BaseModel):
                 raise DataValidationError("Invalid quantity detected in item product: "
                                           + str(data["quantity"]))
             self.total = data["total"]
-        except AttributeError as error:
-            raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
             raise DataValidationError("Invalid item: missing " + error.args[0]) from error
         except TypeError as error:
@@ -198,14 +196,12 @@ class Order(db.Model, BaseModel):
                     product = Item()
                     product.deserialize(json_product)
                     self.items.append(product)
-        except AttributeError as error:
-            raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
             raise DataValidationError("Invalid order: missing " + error.args[0]) from error
         except TypeError as error:
-            raise DataValidationError(
-                "Invalid order: body of request contained bad or no data " + str(error)
-            ) from error
+            raise DataValidationError("Invalid order: body of request contained bad or no data " + str(error)) from error
+        except ValueError as error:
+            raise DataValidationError("Invalid order: " + error.args[0]) from error
         return self
 
     @classmethod

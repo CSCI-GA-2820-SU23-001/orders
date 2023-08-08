@@ -47,6 +47,16 @@ Feature: The order store service back-end
         And I should see "92931" in the "Customer_id" field
         And I should see "OPEN" in the "Status" dropdown
 
+    Scenario: Create order with missing info
+        When I visit the "Home Page"
+        And I set the "Total" to "871.17"
+        And I select "CREDITCARD" in the "Payment" dropdown
+        And I set the "Address" to "59581 Gutierrez Walks North Tyler, NC 31808"
+        And I set the "Customer_id" to "92931"
+        And I select "OPEN" in the "Status" dropdown
+        And I press the "Create" button
+        Then I should see the message "Order Missing Info" 
+
     Scenario: Search by customer id
         When I visit the "Home Page"
         And I set the "Customer ID" to "11"

@@ -242,6 +242,18 @@ class TestOrder(unittest.TestCase):
         order = Order()
         self.assertRaises(DataValidationError, order.deserialize, [])
 
+    def test_deserialize_with_value_error(self):
+        """It should not Deserialize an order with a ValueError"""
+        order = Order()
+        self.assertRaises(DataValidationError, order.deserialize, {
+            "date": "",
+            "total": 3,
+            "payment": "VEMO",
+            "address": "123 Main St",
+            "customer_id": 42,
+            "status": "OPEN"
+        })
+
     def test_deserialize_item_key_error(self):
         """It should not Deserialize an item with a KeyError"""
         item = Item()
