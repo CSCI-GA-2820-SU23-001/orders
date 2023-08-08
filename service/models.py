@@ -201,7 +201,7 @@ class Order(db.Model, BaseModel):
         except TypeError as error:
             raise DataValidationError("Invalid order: body of request contained bad or no data " + str(error)) from error
         except ValueError as error:
-            raise DataValidationError("Invalid order data: " + error.args[0]) from error
+            raise DataValidationError("Invalid order: " + error.args[0]) from error
         return self
 
     @classmethod
