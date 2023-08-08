@@ -52,10 +52,7 @@ def create_orders():
     app.logger.info("Request to Create order...")
     order_data = request.get_json()
     order = Order()
-    try:
-        order.deserialize(order_data)
-    except DataValidationError as error:
-        abort(status.HTTP_400_BAD_REQUEST, error)
+    order.deserialize(order_data)
     order.create()
     app.logger.info("New order %s is created!", order.id)
 

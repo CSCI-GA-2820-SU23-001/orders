@@ -50,7 +50,7 @@
             <label class="control-label col-sm-2" for="order_date">Date:</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" name="order_date" id="order_date" placeholder="yyyy-mm-dd"
-                pattern="\d{4}-\d{2}-\d{2}">
+                pattern="\d{4}-\d{2}-\d{2}" required>
             </div>
           </div>
 
@@ -67,8 +67,8 @@
           <div class="form-group">
             <label class="control-label col-sm-2" for="order_payment">Payment:</label>
             <div class="col-sm-10">
-              <select class="form-control" name="order_payment" id="order_payment">
-                <option selected value> -- select a payment option -- </option>
+              <select class="form-control" name="order_payment" id="order_payment" required>
+                <option value= "" disabled selected> -- select a payment option -- </option>
                 <option value="CREDITCARD">CREDITCARD</option>
                 <option value="DEBITCARD">DEBITCARD</option>
                 <option value="VEMO">VEMO</option>
@@ -98,8 +98,8 @@
           <div class="form-group">
             <label class="control-label col-sm-2" for="order_status">Status:</label>
             <div class="col-sm-10">
-              <select class="form-control" name="order_status" id="order_status">
-                <option selected value> -- select a status option -- </option>
+              <select class="form-control" name="order_status" id="order_status" required>
+                <option value= "" disabled selected> -- select a status option -- </option>
                 <option value="OPEN">OPEN</option>
                 <option value="SHIPPING">SHIPPING</option>
                 <option value="DELIVERED">DELIVERED</option>
