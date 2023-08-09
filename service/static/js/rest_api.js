@@ -201,6 +201,7 @@ $(function () {
         });
 
         ajax.fail(function (res) {
+            clear_form_data()
             flash_message("Server error!")
         });
     });
