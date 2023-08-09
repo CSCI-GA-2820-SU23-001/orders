@@ -164,6 +164,12 @@ Feature: The order store service back-end
         Then I should see the message "Success"
         And I should see "CANCELLED" in the "Status" dropdown
 
+    Scenario: Cannot cancel non existing Order
+        When I visit the "Home Page"
+        And I set the "Id" to "0"
+        And I press the "Cancel" button
+        Then I should see the message "Cannot cancel non existing order"
+
     Scenario: Update an Order
         When I visit the "Home Page"
         And I set the "Customer_id" to "92931"
