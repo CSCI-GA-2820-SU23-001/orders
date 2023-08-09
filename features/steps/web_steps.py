@@ -164,7 +164,7 @@ def step_impl(context, element_name, text_string):
     assert(element)
 
 @when('I clear "{element_name}"')
-def step_clear_field(context, element_name):
+def step_impl(context, element_name):
     element_id = ID_PREFIX + element_name.lower().replace(' ', '_')
     # element = context.driver.find_element(By.ID, element_id)
     element = WebDriverWait(context.driver, context.wait_seconds).until(
