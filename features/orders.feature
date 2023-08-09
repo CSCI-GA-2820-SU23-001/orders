@@ -191,3 +191,66 @@ Feature: The order store service back-end
         Then I should see the message "Success"
         And I should see "13929" in the results
         And I should not see "92931" in the results
+    
+    Scenario: Cannot update an order with a non-existent order ID
+        When I visit the "Home Page"
+        And I set the "Customer_id" to "92931"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "92931" in the "Customer_id" field
+        When I set the "Id" to "0"
+        And I press the "Update" button
+        Then I should see the message "404 Not Found: Order with id '0' does not exist."
+    
+    Scenario: Cannot update with missing required address field
+        When I visit the "Home Page"
+        And I set the "Customer_id" to "92931"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "92931" in the "Customer_id" field
+        And I should see "59581 Gutierrez Walks North Tyler, NC 31808" in the "Address" field
+        When I clear "Address"
+        And I press the "Update" button
+        Then I should see the message "Order Missing Info"
+    
+    Scenario: Cannot update with missing required customer_id field
+        When I visit the "Home Page"
+        And I set the "Customer_id" to "92931"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "92931" in the "Customer_id" field
+        When I clear "Customer_id"
+        And I press the "Update" button
+        Then I should see the message "Order Missing Info"
+    
+    Scenario: Cannot update with missing required total field
+        When I visit the "Home Page"
+        And I set the "Customer_id" to "92931"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "92931" in the "Customer_id" field
+        And I should see "871.17" in the "Total" field
+        When I clear "Total"
+        And I press the "Update" button
+        Then I should see the message "Order Missing Info"
+
+    Scenario: Cannot update with missing required order_id field
+        When I visit the "Home Page"
+        And I set the "Customer_id" to "92931"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "92931" in the "Customer_id" field
+        When I clear "ID"
+        And I press the "Update" button
+        Then I should see the message "Order Missing Info"
+
+    Scenario: Cannot update an order with invalid date format
+        When I visit the "Home Page"
+        And I set the "Customer_id" to "92931"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "92931" in the "Customer_id" field
+        And I should see "2019-05-14" in the "Date" field
+        When I change "Date" to "19-05-14"
+        And I press the "Update" button
+        Then I should see the message "Invalid date, date should be valid and in yyyy-mm-dd format"
