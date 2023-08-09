@@ -2,7 +2,7 @@
 REGISTRY ?= us.icr.io
 NAMESPACE ?= nicksome
 IMAGE_NAME ?= orders
-IMAGE_TAG ?= 1.4
+IMAGE_TAG ?= 1.6
 IMAGE ?= $(REGISTRY)/$(NAMESPACE)/$(IMAGE_NAME):$(IMAGE_TAG)
 # PLATFORM ?= "linux/amd64,linux/arm64"
 PLATFORM ?= "linux/amd64"
