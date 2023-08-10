@@ -13,7 +13,7 @@ DELETE /orders/{id} - delete an order
 from flask import jsonify, request, url_for, make_response, abort
 from flask_restx import Resource, fields, reqparse
 from service.common import status  # HTTP Status Codes
-from service.models import Order, Item, DataValidationError, PaymentType, StatusType
+from service.models import Order, Item, DataValidationError
 
 # Import Flask application
 from . import app, api
@@ -45,7 +45,7 @@ create_model = api.model(
         "total": fields.Float(required=True, description="The total amount of Order"),
         "payment": fields.String(
             required=True,
-            enum=PaymentType._member_names_,
+            enum=["CREDITCARD", "DEBITCARD", "VEMO"],
             description="Payment method (VEMO, CREDITCARD, DEBITCARD) of the Order",
         ),
         # pylint: disable=protected-access
@@ -53,7 +53,7 @@ create_model = api.model(
         "customer_id": fields.Integer(required=True, description="The customer who places the Order"),
         "status": fields.String(
             required=True,
-            enum=StatusType._member_names_,
+            enum=["OPEN", "SHIPPING", "DELIVERED", "CANCELLED"],
             description="Status (OPEN, SHIPPING, DELIVERED, CANCELLED) of the Order",
         ),
     },
@@ -215,7 +215,7 @@ class OrderCollection(Resource):
         app.logger.info("New order %s is created!", order.id)
 
         resp = order.serialize()
-        location_url = url_for(OrderResource, order_id=order.id, _external=True)
+        location_url = api.url_for(OrderResource, order_id=order.id, _external=True)
         return resp, status.HTTP_201_CREATED, {"Location": location_url}
 
 
