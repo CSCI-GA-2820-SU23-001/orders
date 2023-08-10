@@ -6,7 +6,7 @@ All of the models are stored in this module
 import logging
 from datetime import date
 from abc import abstractmethod
-# from enum import Enum
+from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -14,6 +14,21 @@ logger = logging.getLogger("flask.app")
 
 # Create the SQLAlchemy object to be initialized later in init_db()
 db = SQLAlchemy()
+
+class PaymentType(Enum):
+    """Enumeration of valid Payment Types"""
+    CREDITCARD = 0
+    DEBITCARD = 1
+    VEMO = 2
+    UNKNOWN = 3
+
+class StatusType(Enum):
+    """Enumeration of valid Status Types"""
+    OPEN = 0
+    SHIPPING = 1
+    DELIVERED = 2
+    CANCELLED = 3
+    UNKNOWN = 4
 
 
 # Function to initialize the database
@@ -145,15 +160,17 @@ class Order(db.Model, BaseModel):
     date = db.Column(db.Date(), nullable=False, default=date.today())
     total = db.Column(db.Float, nullable=False)
     payment = db.Column(
-        db.Enum("CREDITCARD", "DEBITCARD", "VEMO", name="payment_enum"),
-        nullable=False
+        db.Enum(PaymentType),
+        nullable=False,
+        server_default=(PaymentType.UNKNOWN.name),
     )
+
     address = db.Column(db.String(100), nullable=False)
     customer_id = db.Column(db.Integer, nullable=False)
     status = db.Column(
-        db.Enum("OPEN", "SHIPPING", "DELIVERED", "CANCELLED", name="status_enum"),
+        db.Enum(StatusType),
         nullable=False,
-        server_default="OPEN"
+        server_default=(StatusType.OPEN.name),
     )
     items = db.relationship("Item", backref="order", passive_deletes=True)
 
