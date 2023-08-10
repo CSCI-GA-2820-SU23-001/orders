@@ -35,7 +35,7 @@ def index():
 @app.route("/health")
 def healthcheck():
     """Let them know our heart is still beating"""
-    return make_response(jsonify(status=200, message="OK"), status.HTTP_200_OK)
+    return {"status": 'OK'}, status.HTTP_200_OK
 
 # Define the model so that the docs reflect what can be sent
 create_model = api.model(
@@ -141,14 +141,14 @@ class OrderResource(Resource):
         order.deserialize(data)
         order.update()
 
-        resp = order.serialize(), status.HTTP_200_OK
+        return order.serialize(), status.HTTP_200_OK
 
     # ------------------------------------------------------------------
     # DELETE AN ORDER
     # ------------------------------------------------------------------
     @api.doc("delete_orders")
     @api.response(204, "Order deleted")
-    def delete(order_id):
+    def delete(self, order_id):
         """
         Delete an Order
         This endpoint will delete an order based the id specified in the path
@@ -157,6 +157,8 @@ class OrderResource(Resource):
         account = Order.find(order_id)
         if account:
             account.delete()
+            app.logger.info("Order with id [%s] was deleted", order_id)
+
         return "", status.HTTP_204_NO_CONTENT
 
 
