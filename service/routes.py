@@ -291,7 +291,7 @@ class ItemCollection(Resource):
     # ------------------------------------------------------------------
     @api.doc("list_items")
     @api.expect(order_args, validate=True)
-    @api.marshal_list_with(order_model)
+    @api.marshal_list_with(item_model)
     def get(self, order_id):
         """Returns all items for an Order"""
         app.logger.info("Request to list all Items for an order with id: %s", order_id)
@@ -380,7 +380,7 @@ class ItemResource(Resource):
     @api.response(400, "The posted Item data was not valid")
     @api.expect(item_model)
     @api.marshal_with(item_model)
-    def post(self, order_id, item_id):
+    def put(self, order_id, item_id):
         """Update an Item"""
         app.logger.info("Request to update Item %s for Order id: %s", item_id, order_id)
 
@@ -392,10 +392,11 @@ class ItemResource(Resource):
         try:
             item.deserialize(data)
         except DataValidationError as error:
-            abort(status.HTTP_400_BAD_REQUEST, error)
+            abort(status.HTTP_400_BAD_REQUEST, "Invalid quantity detected in item product")
 
         item.update()
-        return item.serialize(), status.HTTP_200_OK
+        resp = item.serialize()
+        return resp, status.HTTP_200_OK
 
     # ------------------------------------------------------------------
     # DELETE AN ITEM
