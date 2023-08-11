@@ -32,6 +32,34 @@ $(function () {
         $("#flash_message").append(message);
     }
 
+    // Check Valid Date
+    function isValidDate(date) {
+        // Regular expression to check the date format YYYY-MM-DD
+        const regex = /^\d{4}-\d{2}-\d{2}$/;
+        
+        if (!date.match(regex)) return false;
+    
+        // Construct a Date object from the string and ensure it's valid
+        const parts = date.split('-');
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const day = parseInt(parts[2], 10);
+    
+        const dt = new Date(year, month - 1, day);
+        
+        return dt.getFullYear() === year && dt.getMonth() + 1 === month && dt.getDate() === day;
+    }
+
+    // Check Content Empty
+    function isContentEmpty(content) {
+        return content === "";
+    }
+    
+    // Check Is Number
+    function isNumber(value) {
+        return !isNaN(parseFloat(value)) && isFinite(value);
+    }
+
     // ****************************************
     // Create an Order
     // ****************************************
@@ -44,6 +72,16 @@ $(function () {
         let address = $("#order_address").val();
         let customer_id = $("#order_customer_id").val();
         let status = $("#order_status").val();
+
+        if (!isNumber(total)) {
+            flash_message("Invalid total, total should be an integer or decimal");
+            return;
+        }
+
+        if (isContentEmpty(address)) {
+            flash_message("Order Missing Info")
+            return;
+        }
 
         let data = {
             "date": date,
@@ -88,6 +126,17 @@ $(function () {
         let address = $("#order_address").val();
         let customer_id = $("#order_customer_id").val();
         let status = $("#order_status").val();
+
+        if (!isValidDate(date)) {
+            flash_message("Invalid date, date should be valid and in yyyy-mm-dd format");
+            return;
+        }
+
+        // Check if any field is empty
+        if (!order_id || !date || !total || !payment || !address || !customer_id || !status) {
+            flash_message("Order Missing Info");
+            return;  // Stop the function here
+        }
 
         let data = {
             "date": date,
