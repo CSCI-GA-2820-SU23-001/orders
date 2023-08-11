@@ -32,7 +32,7 @@ $(function () {
         $("#flash_message").append(message);
     }
 
-    // Check Vaid Date
+    // Check Valid Date
     function isValidDate(date) {
         // Regular expression to check the date format YYYY-MM-DD
         const regex = /^\d{4}-\d{2}-\d{2}$/;
@@ -57,7 +57,7 @@ $(function () {
     
     // Check Is Number
     function isNumber(value) {
-        return typeof value === 'number' && !isNaN(value);
+        return !isNaN(parseFloat(value)) && isFinite(value);
     }
 
     // ****************************************
@@ -72,12 +72,6 @@ $(function () {
         let address = $("#order_address").val();
         let customer_id = $("#order_customer_id").val();
         let status = $("#order_status").val();
-
-        //check if it is a valid date
-        if (!isValidDate(date)) {
-            flash_message("Invalid date, date should be valid and in yyyy-mm-dd format");
-            return;
-        }
 
         if (!isNumber(total)) {
             flash_message("Invalid total, total should be an integer or decimal");
