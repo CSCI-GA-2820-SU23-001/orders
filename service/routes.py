@@ -85,6 +85,9 @@ item_model = api.inherit(
         "id": fields.String(
             readOnly=True, description="The item_id assigned internally by service"
         ),
+        "order_id": fields.String(
+            readOnly=True, description="Foreign Key order_id"
+        ),
     },
 )
 
