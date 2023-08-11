@@ -32,6 +32,7 @@ $(function () {
         $("#flash_message").append(message);
     }
 
+    // Check Valid Date
     function isValidDate(date) {
         // Regular expression to check the date format YYYY-MM-DD
         const regex = /^\d{4}-\d{2}-\d{2}$/;
@@ -48,7 +49,16 @@ $(function () {
         
         return dt.getFullYear() === year && dt.getMonth() + 1 === month && dt.getDate() === day;
     }
+
+    // Check Content Empty
+    function isContentEmpty(content) {
+        return content === "";
+    }
     
+    // Check Is Number
+    function isNumber(value) {
+        return !isNaN(parseFloat(value)) && isFinite(value);
+    }
 
     // ****************************************
     // Create an Order
@@ -62,6 +72,16 @@ $(function () {
         let address = $("#order_address").val();
         let customer_id = $("#order_customer_id").val();
         let status = $("#order_status").val();
+
+        if (!isNumber(total)) {
+            flash_message("Invalid total, total should be an integer or decimal");
+            return;
+        }
+
+        if (isContentEmpty(address)) {
+            flash_message("Order Missing Info")
+            return;
+        }
 
         let data = {
             "date": date,
