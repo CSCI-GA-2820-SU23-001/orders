@@ -71,7 +71,6 @@ def method_not_supported(error):
     )
 
 
-
 # @app.errorhandler(status.HTTP_409_CONFLICT)
 # def resource_conflict(error):
 #     """Handles resource conflicts with HTTP_409_CONFLICT"""

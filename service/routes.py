@@ -265,7 +265,7 @@ class CancelResource(Resource):
         order = Order.find(order_id)
         if not order:
             abort(status.HTTP_404_NOT_FOUND,
-                f"Order with id '{order_id}' does not exist.")
+                  f"Order with id '{order_id}' does not exist.")
         if not order.status == "OPEN":
             abort(
                 status.HTTP_409_CONFLICT,
@@ -415,7 +415,6 @@ class ItemResource(Resource):
             address.delete()
 
         return "", status.HTTP_204_NO_CONTENT
-
 
 
 # # ------------------------------------------------------------------
