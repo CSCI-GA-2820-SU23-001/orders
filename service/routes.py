@@ -38,7 +38,7 @@ def healthcheck():
     return {"status": 'OK'}, status.HTTP_200_OK
 
 # Define the model so that the docs reflect what can be sent
-create_model = api.model(
+create_order_model = api.model(
     "Order",
     {
         "date": fields.Date(required=True, description="The create date of the Order"),
@@ -61,13 +61,33 @@ create_model = api.model(
 
 order_model = api.inherit(
     "OrderModel",
-    create_model,
+    create_order_model,
     {
         "id": fields.String(
-            readOnly=True, description="The id assigned internally by service"
+            readOnly=True, description="The order_id assigned internally by service"
         ),
     },
 )
+
+create_item_model = api.model(
+    "Item",
+    {
+        "product_id": fields.Integer(required=True, description="The Product ID of the Item"),
+        "quantity": fields.Integer(required=True, description="Quantity of this product"),
+        "total": fields.Float(required=True, description="The amount of product unit_price * quantity"),
+    },
+)
+
+item_model = api.inherit(
+    "ItemModel",
+    create_item_model,
+    {
+        "id": fields.String(
+            readOnly=True, description="The item_id assigned internally by service"
+        ),
+    },
+)
+
 
 # query string arguments
 order_args = reqparse.RequestParser()
@@ -205,7 +225,7 @@ class OrderCollection(Resource):
     # ------------------------------------------------------------------
     @api.doc("create_orders")
     @api.response(400, "The posted data was not valid")
-    @api.expect(create_model)
+    @api.expect(create_order_model)
     @api.marshal_with(order_model, code=201)
     def post(self):
         """
@@ -289,8 +309,8 @@ class ItemCollection(Resource):
     # ------------------------------------------------------------------
     @api.doc("add_an_item")
     @api.response(400, "The posted data was not valid")
-    @api.expect(create_model)
-    @api.marshal_with(order_model, code=201)
+    @api.expect(create_item_model)
+    @api.marshal_with(item_model, code=201)
     def post(self, order_id):
         """Create an Item for an Order"""
         app.logger.info("Request to create an Item for Order with id: %s", order_id)
@@ -341,7 +361,7 @@ class ItemResource(Resource):
     # ------------------------------------------------------------------
     @api.doc("get_items")
     @api.response(404, "Item not found")
-    @api.marshal_with(order_model)
+    @api.marshal_with(item_model)
     def get(self, order_id, item_id):
         """Retrieve an Items in an Order"""
         app.logger.info("Request to retrieve an Item with id %s for Order %s", item_id, order_id)
@@ -358,8 +378,8 @@ class ItemResource(Resource):
     @api.doc("update_an_item")
     @api.response(404, "Item not found")
     @api.response(400, "The posted Item data was not valid")
-    @api.expect(order_model)
-    @api.marshal_with(order_model)
+    @api.expect(item_model)
+    @api.marshal_with(item_model)
     def post(self, order_id, item_id):
         """Update an Item"""
         app.logger.info("Request to update Item %s for Order id: %s", item_id, order_id)
