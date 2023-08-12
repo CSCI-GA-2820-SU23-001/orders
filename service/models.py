@@ -6,7 +6,6 @@ All of the models are stored in this module
 import logging
 from datetime import date
 from abc import abstractmethod
-# from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
 
 

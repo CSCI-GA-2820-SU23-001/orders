@@ -200,7 +200,7 @@ Feature: The order store service back-end
         And I should see "92931" in the "Customer_id" field
         When I set the "Id" to "0"
         And I press the "Update" button
-        Then I should see the message "404 Not Found: Order with id '0' does not exist."
+        Then I should see the message "Order with id '0' does not exist."
     
     Scenario: Cannot update with missing required address field
         When I visit the "Home Page"
