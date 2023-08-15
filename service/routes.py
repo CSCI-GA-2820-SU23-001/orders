@@ -13,7 +13,7 @@ DELETE /orders/{id} - delete an order
 from flask import request, abort
 from flask_restx import Resource, fields, reqparse
 from sqlalchemy import create_engine
-from sqlalchemy.exc import SQLAlchemyError 
+from sqlalchemy.exc import SQLAlchemyError
 from service.common import status  # HTTP Status Codes
 from service.models import Order, Item, DataValidationError
 
@@ -50,7 +50,7 @@ def healthcheck():
         connection = engine.connect()
         connection.execute('SELECT 1')
         connection.close()
-    except SQLAlchemyError as error: 
+    except SQLAlchemyError as error:
         app.logger.error("Database health check failed: %s", str(error))
         return {"status": 503, "message": "Database Unavailable"}, status.HTTP_503_SERVICE_UNAVAILABLE
 
