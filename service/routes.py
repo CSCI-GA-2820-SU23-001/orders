@@ -14,11 +14,10 @@ from flask import request, abort
 from flask_restx import Resource, fields, reqparse
 from service.common import status  # HTTP Status Codes
 from service.models import Order, Item, DataValidationError
+from sqlalchemy import create_engine
 
 # Import Flask application
 from . import app, api
-
-from sqlalchemy import create_engine
 
 DATABASE_URLS = {
     "dev": "postgresql://postgres:postgres@159.122.183.184:31032/postgres",
@@ -51,9 +50,8 @@ def healthcheck():
         connection.execute('SELECT 1')
         connection.close()
     except Exception as e:
-        # Logging the error is a good practice to diagnose potential DB issues.
         app.logger.error(f"Database health check failed: {str(e)}")
-        return make_response(jsonify(status=503, message="Database Unavailable"), status.HTTP_503_SERVICE_UNAVAILABLE)
+        return {"status": 503, "message": "Database Unavailable"}, status.HTTP_503_SERVICE_UNAVAILABLE
 
     # If both checks pass, return 200 OK.
     return {"status": 'OK'}, status.HTTP_200_OK
