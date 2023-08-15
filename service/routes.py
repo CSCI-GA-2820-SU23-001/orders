@@ -44,17 +44,6 @@ def index():
 @app.route("/health")
 def healthcheck():
     """Let them know our heart is still beating"""
-    # try:
-    #     # A simple query to test the database connection and responsiveness.
-    #     db.session.execute('SELECT 1')
-    # except Exception as e:
-    #     # Logging the error is a good practice to diagnose potential DB issues.
-    #     app.logger.error(f"Database health check failed: {str(e)}")
-    #     return make_response(jsonify(status=503, message="Database Unavailable"), status.HTTP_503_SERVICE_UNAVAILABLE)
-
-    # # If both checks pass, return 200 OK.
-    # return make_response(jsonify(status=200, message="OK"), status.HTTP_200_OK)
-
     try:
         # Creating a new engine for checking health of the database
         engine = create_engine(DATABASE_URLS[current_env])
