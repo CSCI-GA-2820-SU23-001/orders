@@ -21,7 +21,7 @@ from itertools import cycle
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
-BASE_URL = "/orders"
+BASE_URL = "/api/orders"
 NONEXIST_ORDER_ID = "1234"
 NONEXIST_ITEM_ID = "1234"
 

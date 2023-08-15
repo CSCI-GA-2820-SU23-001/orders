@@ -32,6 +32,7 @@ $(function () {
         $("#flash_message").append(message);
     }
 
+    // Check Valid Date
     function isValidDate(date) {
         // Regular expression to check the date format YYYY-MM-DD
         const regex = /^\d{4}-\d{2}-\d{2}$/;
@@ -48,7 +49,16 @@ $(function () {
         
         return dt.getFullYear() === year && dt.getMonth() + 1 === month && dt.getDate() === day;
     }
+
+    // Check Content Empty
+    function isContentEmpty(content) {
+        return content === "";
+    }
     
+    // Check Is Number
+    function isNumber(value) {
+        return !isNaN(parseFloat(value)) && isFinite(value);
+    }
 
     // ****************************************
     // Create an Order
@@ -63,6 +73,16 @@ $(function () {
         let customer_id = $("#order_customer_id").val();
         let status = $("#order_status").val();
 
+        if (!isNumber(total)) {
+            flash_message("Invalid total, total should be an integer or decimal");
+            return;
+        }
+
+        if (isContentEmpty(address)) {
+            flash_message("Order Missing Info")
+            return;
+        }
+
         let data = {
             "date": date,
             "total": total,
@@ -76,7 +96,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "POST",
-            url: "/orders",
+            url: "/api/orders",
             contentType: "application/json",
             data: JSON.stringify(data),
         });
@@ -131,7 +151,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "PUT",
-            url: `/orders/${order_id}`,
+            url: `/api/orders/${order_id}`,
             contentType: "application/json",
             data: JSON.stringify(data)
         })
@@ -159,7 +179,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/orders/${order_id}`,
+            url: `/api/orders/${order_id}`,
             contentType: "application/json",
             data: ''
         })
@@ -189,7 +209,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "PUT",
-            url: `/orders/${order_id}/cancel`,
+            url: `/api/orders/${order_id}/cancel`,
             contentType: "application/json",
             data: ''
         })
@@ -219,7 +239,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "DELETE",
-            url: `/orders/${order_id}`,
+            url: `/api/orders/${order_id}`,
             contentType: "application/json",
             data: '',
         })
@@ -282,7 +302,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/orders?${queryString}`,
+            url: `/api/orders?${queryString}`,
             contentType: "application/json",
             data: ''
         })
