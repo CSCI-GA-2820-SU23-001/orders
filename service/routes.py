@@ -12,9 +12,10 @@ DELETE /orders/{id} - delete an order
 # from flask import Flask
 from flask import request, abort
 from flask_restx import Resource, fields, reqparse
+from sqlalchemy import create_engine
+from sqlalchemy.exc import SQLAlchemyError 
 from service.common import status  # HTTP Status Codes
 from service.models import Order, Item, DataValidationError
-from sqlalchemy import create_engine
 
 # Import Flask application
 from . import app, api
@@ -24,7 +25,7 @@ DATABASE_URLS = {
     "prod": "postgresql://postgres:postgres@159.122.183.184:31033/postgres"
 }
 # Assuming you are using 'dev' environment for now.
-current_env = "dev"
+CURRENT_ENV = "dev"
 
 
 ######################################################################
@@ -45,12 +46,12 @@ def healthcheck():
     """Let them know our heart is still beating"""
     try:
         # Creating a new engine for checking health of the database
-        engine = create_engine(DATABASE_URLS[current_env])
+        engine = create_engine(DATABASE_URLS[CURRENT_ENV])
         connection = engine.connect()
         connection.execute('SELECT 1')
         connection.close()
-    except Exception as e:
-        app.logger.error(f"Database health check failed: {str(e)}")
+    except SQLAlchemyError as error: 
+        app.logger.error("Database health check failed: %s", str(error))
         return {"status": 503, "message": "Database Unavailable"}, status.HTTP_503_SERVICE_UNAVAILABLE
 
     # If both checks pass, return 200 OK.
