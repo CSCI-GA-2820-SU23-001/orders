@@ -9,14 +9,20 @@ POST /orders - creates a new order
 PUT /orders/{id} - update an order
 DELETE /orders/{id} - delete an order
 """
-# from flask import Flask
+import os
 from flask import request, abort
 from flask_restx import Resource, fields, reqparse
+from sqlalchemy import create_engine, text
+from sqlalchemy.exc import SQLAlchemyError
 from service.common import status  # HTTP Status Codes
 from service.models import Order, Item, DataValidationError
 
 # Import Flask application
 from . import app, api
+
+DATABASE_URI = os.getenv(
+    "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
+)
 
 
 ######################################################################
@@ -27,14 +33,24 @@ def index():
     """Base URL for our service"""
     return app.send_static_file("index.html")
 
+
 ######################################################################
 # GET HEALTH CHECK
 ######################################################################
-
-
 @app.route("/health")
 def healthcheck():
     """Let them know our heart is still beating"""
+    try:
+        # Creating a new engine for checking health of the database
+        engine = create_engine(DATABASE_URI)
+        connection = engine.connect()
+        connection.execute(text('SELECT 1'))
+        connection.close()
+    except SQLAlchemyError as error:
+        app.logger.error("Database health check failed: %s", str(error))
+        return {"status": 503, "message": "Database Unavailable"}, status.HTTP_503_SERVICE_UNAVAILABLE
+
+    # If both checks pass, return 200 OK.
     return {"status": 'OK'}, status.HTTP_200_OK
 
 
