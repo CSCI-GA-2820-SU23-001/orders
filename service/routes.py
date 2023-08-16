@@ -20,6 +20,9 @@ from service.models import Order, Item, DataValidationError
 # Import Flask application
 from . import app, api
 
+DATABASE_URI = os.getenv(
+    "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
+)
 
 ######################################################################
 # GET INDEX
@@ -33,15 +36,11 @@ def index():
 # GET HEALTH CHECK
 ######################################################################
 
-
 @app.route("/health")
 def healthcheck():
     """Let them know our heart is still beating"""
     try:
         # Creating a new engine for checking health of the database
-        DATABASE_URI = os.getenv(
-            "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
-        )
         engine = create_engine(DATABASE_URI)
         connection = engine.connect()
         connection.execute('SELECT 1')
