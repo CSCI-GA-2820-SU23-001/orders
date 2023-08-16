@@ -42,7 +42,7 @@ def healthcheck():
         DATABASE_URI = os.getenv(
             "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
         )
-        engine = create_engine(DATABASE_URL)
+        engine = create_engine(DATABASE_URI)
         connection = engine.connect()
         connection.execute('SELECT 1')
         connection.close()
