@@ -24,6 +24,7 @@ DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
 
+
 ######################################################################
 # GET INDEX
 ######################################################################
@@ -32,10 +33,10 @@ def index():
     """Base URL for our service"""
     return app.send_static_file("index.html")
 
+
 ######################################################################
 # GET HEALTH CHECK
 ######################################################################
-
 @app.route("/health")
 def healthcheck():
     """Let them know our heart is still beating"""
