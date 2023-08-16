@@ -157,7 +157,7 @@ Feature: The order store service back-end
         When I visit the "Home Page"
         And I set the "Id" to "0"
         And I press the "Delete" button
-        Then I should see the message "Server error!"
+        Then I should see the message "Order has been Deleted!"
 
     Scenario: Cancel an Order
         When I visit the "Home Page"
