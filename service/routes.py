@@ -9,7 +9,7 @@ POST /orders - creates a new order
 PUT /orders/{id} - update an order
 DELETE /orders/{id} - delete an order
 """
-# from flask import Flask
+import os
 from flask import request, abort
 from flask_restx import Resource, fields, reqparse
 from sqlalchemy import create_engine
@@ -19,13 +19,6 @@ from service.models import Order, Item, DataValidationError
 
 # Import Flask application
 from . import app, api
-
-DATABASE_URLS = {
-    "dev": "postgresql://postgres:postgres@159.122.183.184:31032/postgres",
-    "prod": "postgresql://postgres:postgres@159.122.183.184:31033/postgres"
-}
-# Assuming you are using 'dev' environment for now.
-CURRENT_ENV = "dev"
 
 
 ######################################################################
@@ -46,7 +39,10 @@ def healthcheck():
     """Let them know our heart is still beating"""
     try:
         # Creating a new engine for checking health of the database
-        engine = create_engine(DATABASE_URLS[CURRENT_ENV])
+        DATABASE_URI = os.getenv(
+            "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
+        )
+        engine = create_engine(DATABASE_URL)
         connection = engine.connect()
         connection.execute('SELECT 1')
         connection.close()
