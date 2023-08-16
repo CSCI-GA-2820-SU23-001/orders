@@ -12,7 +12,7 @@ DELETE /orders/{id} - delete an order
 import os
 from flask import request, abort
 from flask_restx import Resource, fields, reqparse
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 from service.common import status  # HTTP Status Codes
 from service.models import Order, Item, DataValidationError
@@ -44,7 +44,7 @@ def healthcheck():
         # Creating a new engine for checking health of the database
         engine = create_engine(DATABASE_URI)
         connection = engine.connect()
-        connection.execute('SELECT 1')
+        connection.execute(text('SELECT 1'))
         connection.close()
     except SQLAlchemyError as error:
         app.logger.error("Database health check failed: %s", str(error))
